@@ -4,6 +4,9 @@ import {
   apiDispatchTrip,
   apiGetMyTrips,
   apiGetTripById,
+  apiArriveTrip,
+  apiStartTrip,
+  apiCompleteTrip,
 } from "../../api/client";
 import { getErrorMessage } from "../../utils/errors";
 
@@ -43,10 +46,38 @@ export const fetchMyTrips = createAsyncThunk("trips/fetchMine", async (_, thunkA
   }
 });
 
+// Phase 4 — driver lifecycle
+export const arriveTrip = createAsyncThunk("trips/arrive", async (tripId, thunkAPI) => {
+  try {
+    const { data } = await apiArriveTrip(tripId);
+    return data.trip;
+  } catch (err) {
+    return thunkAPI.rejectWithValue(getErrorMessage(err));
+  }
+});
+
+export const startTrip = createAsyncThunk("trips/start", async (tripId, thunkAPI) => {
+  try {
+    const { data } = await apiStartTrip(tripId);
+    return data.trip;
+  } catch (err) {
+    return thunkAPI.rejectWithValue(getErrorMessage(err));
+  }
+});
+
+export const completeTrip = createAsyncThunk("trips/complete", async (tripId, thunkAPI) => {
+  try {
+    const { data } = await apiCompleteTrip(tripId);
+    return data.trip;
+  } catch (err) {
+    return thunkAPI.rejectWithValue(getErrorMessage(err));
+  }
+});
+
 const tripsSlice = createSlice({
   name: "trips",
   initialState: {
-    current: null,   // active trip being viewed
+    current: null,
     mine: [],
     loading: false,
     error: null,
@@ -79,7 +110,22 @@ const tripsSlice = createSlice({
       // history
       .addCase(fetchMyTrips.pending, (s) => { s.loading = true; s.error = null; })
       .addCase(fetchMyTrips.fulfilled, (s, a) => { s.loading = false; s.mine = a.payload; })
-      .addCase(fetchMyTrips.rejected, (s, a) => { s.loading = false; s.error = a.payload || "Failed to load trip history"; });
+      .addCase(fetchMyTrips.rejected, (s, a) => { s.loading = false; s.error = a.payload || "Failed to load trip history"; })
+
+      // arrive
+      .addCase(arriveTrip.pending, (s) => { s.loading = true; s.error = null; })
+      .addCase(arriveTrip.fulfilled, (s, a) => { s.loading = false; s.current = a.payload; })
+      .addCase(arriveTrip.rejected, (s, a) => { s.loading = false; s.error = a.payload || "Failed to arrive"; })
+
+      // start
+      .addCase(startTrip.pending, (s) => { s.loading = true; s.error = null; })
+      .addCase(startTrip.fulfilled, (s, a) => { s.loading = false; s.current = a.payload; })
+      .addCase(startTrip.rejected, (s, a) => { s.loading = false; s.error = a.payload || "Failed to start"; })
+
+      // complete
+      .addCase(completeTrip.pending, (s) => { s.loading = true; s.error = null; })
+      .addCase(completeTrip.fulfilled, (s, a) => { s.loading = false; s.current = a.payload; })
+      .addCase(completeTrip.rejected, (s, a) => { s.loading = false; s.error = a.payload || "Failed to complete"; });
   },
 });
 
