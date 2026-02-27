@@ -2,10 +2,11 @@
 import { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { useTripPolling } from "../../hooks/useTripPolling";
+
 import {
   getMyDriverProfile,
   updateMyDriverStatus,
-} from "../../features/driverProfiles/driverProfilesSlice";
+} from "../../features/driver/driverProfilesSlice";
 
 import {
   fetchTripById,
