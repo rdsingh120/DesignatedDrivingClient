@@ -12,9 +12,11 @@ export const apiCreateEstimate = (payload) => http.post(API.ESTIMATES.CREATE, pa
 
 // Trips
 export const apiCreateTrip = (payload) => http.post(API.TRIPS.CREATE_FROM_ESTIMATE, payload);
-export const apiDispatchTrip = (id) => http.post(API.TRIPS.DISPATCH(id));
+//export const apiDispatchTrip = (id) => http.post(API.TRIPS.DISPATCH(id));
 export const apiGetTripById = (id) => http.get(API.TRIPS.BY_ID(id));
 export const apiGetMyTrips = () => http.get(API.TRIPS.MINE);
+export const apiGetOpenTrips = () => http.get(API.TRIPS.OPEN);
+export const apiAcceptTrip = (id) => http.post(API.TRIPS.ACCEPT(id));
 
 // Driver lifecycle (for Phase 4)
 export const apiArriveTrip = (id) => http.post(API.TRIPS.ARRIVE(id));

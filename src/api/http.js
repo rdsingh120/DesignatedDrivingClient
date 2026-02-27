@@ -5,7 +5,7 @@ export const http = axios.create({
   timeout: 20000,
 });
 
-// Attach JWT automatically (Option A: localStorage)
+// Attach JWT automatically (
 http.interceptors.request.use((config) => {
   const token = localStorage.getItem("token"); // backend returns "token"
   if (token) config.headers.Authorization = `Bearer ${token}`;
