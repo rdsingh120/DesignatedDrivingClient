@@ -6,6 +6,7 @@ import { useTripPolling } from "../../hooks/useTripPolling";
 import {
   getMyDriverProfile,
   updateMyDriverStatus,
+  createMyDriverProfile,
 } from "../../features/driver/driverProfilesSlice";
 
 import {
@@ -88,8 +89,7 @@ export default function DriverDashboardPage() {
               <b>Availability:</b> {driverProfile.availability}
             </p>
             <p>
-              <b>Active Trip:</b>{" "}
-              {String(driverProfile.activeTrip || "None")}
+              <b>Active Trip:</b> {String(driverProfile.activeTrip || "None")}
             </p>
 
             <button onClick={toggleAvailability} disabled={dpLoading}>
@@ -97,7 +97,12 @@ export default function DriverDashboardPage() {
             </button>
           </>
         ) : (
-          <p>No driver profile found. Create it first.</p>
+          <>
+            <p>No driver profile found.</p>
+            <button onClick={() => dispatch(createMyDriverProfile())}>
+              Create Driver Profile
+            </button>
+          </>
         )}
       </div>
 

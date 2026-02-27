@@ -1,9 +1,10 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { getErrorMessage } from "../../utils/errors";
 import {
   apiGetMyDriverProfile as getMe,
   apiUpdateMyDriverStatus as updateStatus,
+  apiCreateMyDriverProfile as createMe,
 } from "../../api/driverClient";
-import { getErrorMessage } from "../../utils/errors";
 
 export const getMyDriverProfile = createAsyncThunk(
   "driverProfiles/getMe",
@@ -22,6 +23,18 @@ export const updateMyDriverStatus = createAsyncThunk(
   async (payload, thunkAPI) => {
     try {
       const { data } = await updateStatus(payload);
+      return data.driverProfile;
+    } catch (err) {
+      return thunkAPI.rejectWithValue(getErrorMessage(err));
+    }
+  }
+);
+
+export const createMyDriverProfile = createAsyncThunk(
+  "driverProfiles/createMe",
+  async (_, thunkAPI) => {
+    try {
+      const { data } = await createMe();
       return data.driverProfile;
     } catch (err) {
       return thunkAPI.rejectWithValue(getErrorMessage(err));
@@ -66,6 +79,20 @@ const driverProfilesSlice = createSlice({
     b.addCase(updateMyDriverStatus.rejected, (s, a) => {
       s.loading = false;
       s.error = a.payload || "Failed to update driver status";
+    })
+
+    // create driver profile
+    b.addCase(createMyDriverProfile.pending, (s) => {
+      s.loading = true;
+      s.error = null;
+    });
+    b.addCase(createMyDriverProfile.fulfilled, (s, a) => {
+      s.loading = false;
+      s.me = a.payload;
+    });
+    b.addCase(createMyDriverProfile.rejected, (s, a) => {
+      s.loading = false;
+      s.error = a.payload || "Failed to create driver profile";
     });
   },
 });

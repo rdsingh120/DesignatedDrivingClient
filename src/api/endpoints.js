@@ -15,10 +15,11 @@ export const API = {
   },
 
   TRIPS: {
-    CREATE_FROM_ESTIMATE: "/api/trips", // body: { estimateId, vehicleId }
+    CREATE_FROM_ESTIMATE: "/api/trips",
     MINE: "/api/trips/mine",
+    OPEN: "/api/trips/open",          
     BY_ID: (id) => `/api/trips/${id}`,
-    DISPATCH: (id) => `/api/trips/${id}/dispatch`,
+    ACCEPT: (id) => `/api/trips/${id}/accept`, 
     ARRIVE: (id) => `/api/trips/${id}/arrive`,
     START: (id) => `/api/trips/${id}/start`,
     COMPLETE: (id) => `/api/trips/${id}/complete`,
