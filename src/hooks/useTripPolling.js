@@ -15,11 +15,8 @@ export function useTripPolling(tripId, stopWhenStatus = "COMPLETED", intervalMs 
     const tick = async () => {
       if (cancelled) return;
 
-      const action = await dispatch(fetchTripById({ tripId }));
-      const payload = action?.payload;
-
-      // Your thunk returns { success, trip } so trip is here:
-      const trip = payload?.trip || payload;
+      const action = await dispatch(fetchTripById(tripId));
+      const trip = action?.payload;
 
       if (trip?.status === stopWhenStatus) {
         if (timerRef.current) clearInterval(timerRef.current);

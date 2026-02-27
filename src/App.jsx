@@ -1,8 +1,8 @@
 import React from "react";
-import { Navigate } from "react-router-dom";
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import RoleRoute from "./routes/RoleRoute";
+import DriverDashboardPage from "./pages/Driver/DriverDashboardPage";
 
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
@@ -32,14 +32,6 @@ function Home() {
   );
 }
 
-function DriverStub() {
-  return (
-    <div style={{ padding: 20 }}>
-      <h3>Driver MVP (Phase 4)</h3>
-      <p>Driver screens coming next.</p>
-    </div>
-  );
-}
 
 export default function App() {
   return (
@@ -64,7 +56,7 @@ export default function App() {
 
           {/* Driver (protected + role-gated) */}
           <Route element={<RoleRoute allow={["DRIVER"]} />}>
-            <Route path="/driver" element={<DriverStub />} />
+            <Route path="/driver" element={<DriverDashboardPage />} />
           </Route>
         </Route>
       </Routes>

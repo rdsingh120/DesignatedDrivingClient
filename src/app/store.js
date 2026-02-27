@@ -4,6 +4,7 @@ import authReducer from "../features/auth/authSlice";
 import vehiclesReducer from "../features/vehicles/vehiclesSlice";
 import estimatesReducer from "../features/estimates/estimatesSlice";
 import tripsReducer from "../features/trips/tripsSlice";
+import driverProfilesReducer from "../features/driver/driverProfilesSlice";
 
 const placeholderReducer = (state = {}) => state;
 
@@ -14,9 +15,7 @@ export const store = configureStore({
     vehicles: vehiclesReducer,
     estimates: estimatesReducer,
     trips: tripsReducer,
-
-    // Phase 4+
-    driverProfiles: placeholderReducer,
+    driverProfiles: driverProfilesReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

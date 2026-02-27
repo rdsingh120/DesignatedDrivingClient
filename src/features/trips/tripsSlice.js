@@ -1,9 +1,14 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import {
   apiCreateTrip,
-  apiDispatchTrip,
+  //apiDispatchTrip,
+  apiGetOpenTrips,
+  apiAcceptTrip,
   apiGetMyTrips,
   apiGetTripById,
+  apiArriveTrip,
+  apiStartTrip,
+  apiCompleteTrip,
 } from "../../api/client";
 import { getErrorMessage } from "../../utils/errors";
 
@@ -16,14 +21,40 @@ export const createTrip = createAsyncThunk("trips/create", async (payload, thunk
   }
 });
 
-export const dispatchTrip = createAsyncThunk("trips/dispatch", async (tripId, thunkAPI) => {
-  try {
-    const { data } = await apiDispatchTrip(tripId);
-    return data.trip;
-  } catch (err) {
-    return thunkAPI.rejectWithValue(getErrorMessage(err));
+// export const dispatchTrip = createAsyncThunk("trips/dispatch", async (tripId, thunkAPI) => {
+//   try {
+//     const { data } = await apiDispatchTrip(tripId);
+//     return data.trip;
+//   } catch (err) {
+//     return thunkAPI.rejectWithValue(getErrorMessage(err));
+//   }
+// });
+
+
+
+export const fetchOpenTrips = createAsyncThunk(
+  "trips/fetchOpen",
+  async (_, thunkAPI) => {
+    try {
+      const { data } = await apiGetOpenTrips();
+      return data.trips ?? [];
+    } catch (err) {
+      return thunkAPI.rejectWithValue(getErrorMessage(err));
+    }
   }
-});
+);
+
+export const acceptTrip = createAsyncThunk(
+  "trips/accept",
+  async (tripId, thunkAPI) => {
+    try {
+      const { data } = await apiAcceptTrip(tripId);
+      return data.trip;
+    } catch (err) {
+      return thunkAPI.rejectWithValue(getErrorMessage(err));
+    }
+  }
+);
 
 export const fetchTripById = createAsyncThunk("trips/fetchById", async (tripId, thunkAPI) => {
   try {
@@ -43,11 +74,40 @@ export const fetchMyTrips = createAsyncThunk("trips/fetchMine", async (_, thunkA
   }
 });
 
+// Phase 4 — driver lifecycle
+export const arriveTrip = createAsyncThunk("trips/arrive", async (tripId, thunkAPI) => {
+  try {
+    const { data } = await apiArriveTrip(tripId);
+    return data.trip;
+  } catch (err) {
+    return thunkAPI.rejectWithValue(getErrorMessage(err));
+  }
+});
+
+export const startTrip = createAsyncThunk("trips/start", async (tripId, thunkAPI) => {
+  try {
+    const { data } = await apiStartTrip(tripId);
+    return data.trip;
+  } catch (err) {
+    return thunkAPI.rejectWithValue(getErrorMessage(err));
+  }
+});
+
+export const completeTrip = createAsyncThunk("trips/complete", async (tripId, thunkAPI) => {
+  try {
+    const { data } = await apiCompleteTrip(tripId);
+    return data.trip;
+  } catch (err) {
+    return thunkAPI.rejectWithValue(getErrorMessage(err));
+  }
+});
+
 const tripsSlice = createSlice({
   name: "trips",
   initialState: {
-    current: null,   // active trip being viewed
+    current: null,
     mine: [],
+    open: [],   
     loading: false,
     error: null,
   },
@@ -67,9 +127,9 @@ const tripsSlice = createSlice({
       .addCase(createTrip.rejected, (s, a) => { s.loading = false; s.error = a.payload || "Failed to create trip"; })
 
       // dispatch
-      .addCase(dispatchTrip.pending, (s) => { s.loading = true; s.error = null; })
-      .addCase(dispatchTrip.fulfilled, (s, a) => { s.loading = false; s.current = a.payload; })
-      .addCase(dispatchTrip.rejected, (s, a) => { s.loading = false; s.error = a.payload || "Failed to dispatch trip"; })
+      // .addCase(dispatchTrip.pending, (s) => { s.loading = true; s.error = null; })
+      // .addCase(dispatchTrip.fulfilled, (s, a) => { s.loading = false; s.current = a.payload; })
+      // .addCase(dispatchTrip.rejected, (s, a) => { s.loading = false; s.error = a.payload || "Failed to dispatch trip"; })
 
       // fetch by id
       .addCase(fetchTripById.pending, (s) => { s.loading = true; s.error = null; })
@@ -79,7 +139,49 @@ const tripsSlice = createSlice({
       // history
       .addCase(fetchMyTrips.pending, (s) => { s.loading = true; s.error = null; })
       .addCase(fetchMyTrips.fulfilled, (s, a) => { s.loading = false; s.mine = a.payload; })
-      .addCase(fetchMyTrips.rejected, (s, a) => { s.loading = false; s.error = a.payload || "Failed to load trip history"; });
+      .addCase(fetchMyTrips.rejected, (s, a) => { s.loading = false; s.error = a.payload || "Failed to load trip history"; })
+
+      // arrive
+      .addCase(arriveTrip.pending, (s) => { s.loading = true; s.error = null; })
+      .addCase(arriveTrip.fulfilled, (s, a) => { s.loading = false; s.current = a.payload; })
+      .addCase(arriveTrip.rejected, (s, a) => { s.loading = false; s.error = a.payload || "Failed to arrive"; })
+
+      // start
+      .addCase(startTrip.pending, (s) => { s.loading = true; s.error = null; })
+      .addCase(startTrip.fulfilled, (s, a) => { s.loading = false; s.current = a.payload; })
+      .addCase(startTrip.rejected, (s, a) => { s.loading = false; s.error = a.payload || "Failed to start"; })
+
+
+      // complete
+      .addCase(completeTrip.pending, (s) => { s.loading = true; s.error = null; })
+      .addCase(completeTrip.fulfilled, (s, a) => { s.loading = false; s.current = a.payload; })
+      .addCase(completeTrip.rejected, (s, a) => { s.loading = false; s.error = a.payload || "Failed to complete"; })
+
+      // fetch open trips
+      .addCase(fetchOpenTrips.pending, (s) => {
+        s.loading = true;
+        s.error = null;
+      })
+      .addCase(fetchOpenTrips.fulfilled, (s, a) => {
+        s.loading = false;
+        s.open = a.payload;
+      })
+      .addCase(fetchOpenTrips.rejected, (s, a) => {
+        s.loading = false;
+        s.error = a.payload || "Failed to load open trips";
+      })
+
+      // accept trip
+      .addCase(acceptTrip.pending, (s) => { s.loading = true; s.error = null; })
+      .addCase(acceptTrip.fulfilled, (s, a) => {
+        s.loading = false;
+        s.current = a.payload;
+        s.open = s.open.filter(t => t._id !== a.payload._id);
+      })
+      .addCase(acceptTrip.rejected, (s, a) => {
+        s.loading = false;
+        s.error = a.payload || "Failed to accept trip";
+      });
   },
 });
 
