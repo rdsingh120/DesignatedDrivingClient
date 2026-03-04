@@ -3,6 +3,10 @@ import ReactDOM from "react-dom/client";
 import { Provider } from "react-redux";
 import { store } from "./app/store";
 import App from "./App.jsx";
+import "leaflet/dist/leaflet.css";
+import { fixLeafletIcons } from "./utils/leafletIcons";
+
+fixLeafletIcons();
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
