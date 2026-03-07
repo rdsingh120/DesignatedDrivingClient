@@ -46,7 +46,7 @@ export default function RiderDashboardPage() {
 
         {/* Book a Ride */}
         <Link
-          to="/rider/vehicles"
+          to="/rider/request"
           style={{ textDecoration: "none" }}
         >
           <div

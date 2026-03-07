@@ -1,18 +1,73 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { createEstimate } from "../../features/estimates/estimatesSlice";
 import { createTrip } from "../../features/trips/tripsSlice";
+import { fetchMyVehicles } from "../../features/vehicles/vehiclesSlice";
 import { getErrorMessage } from "../../utils/errors";
 
 import RoutePreviewMap from "../../features/estimates/components/RoutePreviewMap";
+
+const pageStyle = {
+  minHeight: "100vh",
+  background: "linear-gradient(135deg, #0f172a 0%, #1e293b 100%)",
+  color: "#f1f5f9",
+  fontFamily: "system-ui, sans-serif",
+  padding: "0 0 40px",
+};
+
+const cardStyle = {
+  background: "#1e293b",
+  border: "1px solid #334155",
+  borderRadius: 16,
+  padding: 20,
+  marginBottom: 16,
+};
+
+const inputStyle = {
+  width: "100%",
+  padding: "10px 12px",
+  background: "#0f172a",
+  border: "1px solid #334155",
+  borderRadius: 8,
+  color: "#f1f5f9",
+  fontSize: 14,
+  boxSizing: "border-box",
+};
+
+const btnPrimaryStyle = {
+  padding: "10px 20px",
+  background: "linear-gradient(135deg, #4f46e5, #7c3aed)",
+  color: "#fff",
+  border: "none",
+  borderRadius: 8,
+  cursor: "pointer",
+  fontWeight: 600,
+  fontSize: 14,
+};
+
+const btnSecondaryStyle = {
+  padding: "10px 20px",
+  background: "#334155",
+  color: "#f1f5f9",
+  border: "none",
+  borderRadius: 8,
+  cursor: "pointer",
+  fontWeight: 600,
+  fontSize: 14,
+};
 
 export default function RiderRequestPage() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const [params] = useSearchParams();
 
-  const vehicleId = params.get("vehicleId");
+  // vehicleId from URL param (original flow) or local selection (dashboard flow)
+  const urlVehicleId = params.get("vehicleId");
+  const [selectedVehicleId, setSelectedVehicleId] = useState(urlVehicleId || "");
+
+  const vehicles = useAppSelector((s) => s.vehicles.items);
+  const vehiclesLoading = useAppSelector((s) => s.vehicles.loading);
 
   const estimate = useAppSelector((s) => s.estimates.current);
   const estStatus = useAppSelector((s) =>
@@ -29,19 +84,28 @@ export default function RiderRequestPage() {
     "1 Yonge St, Toronto, ON"
   );
   const [actionError, setActionError] = useState(null);
+  const [hasEstimated, setHasEstimated] = useState(false);
 
-  if (!vehicleId) {
-    return (
-      <div style={{ padding: 20 }}>
-        <h2>Request a Driver</h2>
-        <p>Missing vehicleId. Go back and select a vehicle first.</p>
-      </div>
-    );
-  }
+  // Only fetch vehicles when no vehicleId came from the URL
+  useEffect(() => {
+    if (!urlVehicleId) {
+      dispatch(fetchMyVehicles());
+    }
+  }, [dispatch, urlVehicleId]);
+
+  // Resolve final vehicleId — prefer URL param, fall back to user's selection
+  const vehicleId = urlVehicleId || selectedVehicleId;
+
+  // Label to display — show make/model if we have the full vehicle object
+  const selectedVehicle = vehicles.find((v) => v._id === vehicleId);
+  const vehicleLabel = selectedVehicle
+    ? `${selectedVehicle.year} ${selectedVehicle.make} ${selectedVehicle.model} (${selectedVehicle.plateNumber})`
+    : vehicleId;
 
   async function onEstimate() {
     setActionError(null);
     await dispatch(createEstimate({ pickup_address, dropoff_address }));
+    setHasEstimated(true);
   }
 
   async function onCreateTrip() {
@@ -72,84 +136,157 @@ export default function RiderRequestPage() {
   const mapPolyline = estimate?.route_polyline || null;
 
   return (
-    <div style={{ padding: 20, maxWidth: 900, margin: "0 auto" }}>
-      <h2>Request a Driver</h2>
+    <div style={pageStyle}>
 
-      <div style={{ marginBottom: 10 }}>
-        Using vehicle: <b>{vehicleId}</b>
-      </div>
-
-      {estError && (
-        <div style={{ background: "#fee", padding: 10, marginBottom: 12 }}>
-          {getErrorMessage(estError, "Estimate failed")}
-        </div>
-      )}
-
-      {actionError && (
-        <div style={{ background: "#fee", padding: 10, marginBottom: 12 }}>
-          {getErrorMessage(actionError, "Action failed")}
-        </div>
-      )}
-
-      <div style={{ marginBottom: 14 }}>
-        <RoutePreviewMap
-          pickup={mapPickup}
-          dropoff={mapDropoff}
-          route_polyline={mapPolyline}
-          height={420}
-        />
-      </div>
-
-      <div style={{ display: "grid", gap: 10, maxWidth: 520 }}>
-        <h4>Pickup</h4>
-        <input
-          value={pickup_address}
-          onChange={(e) => setPickupAddress(e.target.value)}
-          placeholder="Pickup address (e.g., 100 King St W, Toronto, ON)"
-        />
-
-        <h4>Dropoff</h4>
-        <input
-          value={dropoff_address}
-          onChange={(e) => setDropoffAddress(e.target.value)}
-          placeholder="Dropoff address (e.g., 1 Yonge St, Toronto, ON)"
-        />
-
-        <button onClick={onEstimate} disabled={estStatus === "loading"}>
-          {estStatus === "loading" ? "Estimating…" : "Get Estimate"}
-        </button>
-      </div>
-
-      {estimate && (
-        <div
-          style={{
-            marginTop: 18,
-            border: "1px solid #ddd",
-            padding: 12,
-            borderRadius: 8,
-          }}
+      {/* Header */}
+      <div style={{ padding: "20px 24px 0", marginBottom: 24 }}>
+        <button
+          onClick={() => navigate(-1)}
+          style={{ background: "none", border: "none", color: "#94a3b8", cursor: "pointer", fontSize: 14, padding: 0, marginBottom: 16 }}
         >
-          <div>
-            <b>Estimate</b>
-          </div>
-          <div>Distance: {estimate.distance_km} km</div>
-          <div>Duration: {estimate.duration_minutes} min</div>
-          <div>
-            Fare: {estimate.fare?.total} {estimate.fare?.currency}
-          </div>
-          <div>Expires: {new Date(estimate.expiresAt).toLocaleString()}</div>
+          ← Back
+        </button>
+        <h2 style={{ margin: 0, fontSize: 24, fontWeight: 700 }}>Request a Driver</h2>
+      </div>
 
-          <button style={{ marginTop: 12 }} onClick={onCreateTrip}>
-            Create Trip
-          </button>
-        </div>
-      )}
+      <div style={{ maxWidth: 900, margin: "0 auto", padding: "0 24px" }}>
 
-      {trip && (
-        <div style={{ marginTop: 10, opacity: 0.7 }}>
-          Current trip: {trip._id}
+        {/* Vehicle selection — inline picker when no vehicleId in URL */}
+        <div style={cardStyle}>
+          <p style={{ margin: "0 0 10px", fontWeight: 600, fontSize: 14, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.06em" }}>Vehicle</p>
+
+          {urlVehicleId ? (
+            // Came from vehicles page — just display it
+            <div style={{ fontSize: 15, color: "#f1f5f9" }}>
+              {vehicleLabel}
+            </div>
+          ) : vehiclesLoading ? (
+            <p style={{ margin: 0, color: "#64748b", fontSize: 14 }}>Loading your vehicles…</p>
+          ) : vehicles.length === 0 ? (
+            <div>
+              <p style={{ margin: "0 0 10px", color: "#f87171", fontSize: 14 }}>No vehicles found. Add one first.</p>
+              <button style={btnSecondaryStyle} onClick={() => navigate("/rider/vehicles")}>
+                Go to My Vehicles
+              </button>
+            </div>
+          ) : (
+            // Came from dashboard — let the user pick inline
+            <select
+              value={selectedVehicleId}
+              onChange={(e) => setSelectedVehicleId(e.target.value)}
+              style={{ ...inputStyle, cursor: "pointer" }}
+            >
+              <option value="">— Select a vehicle —</option>
+              {vehicles.map((v) => (
+                <option key={v._id} value={v._id}>
+                  {v.year} {v.make} {v.model} ({v.plateNumber})
+                </option>
+              ))}
+            </select>
+          )}
         </div>
-      )}
+
+        {/* Only show the rest once a vehicle is chosen */}
+        {vehicleId && (
+          <>
+            {estError && (
+              <div style={{ background: "#450a0a", border: "1px solid #991b1b", padding: "10px 14px", borderRadius: 8, marginBottom: 12, fontSize: 14, color: "#fca5a5" }}>
+                {getErrorMessage(estError, "Estimate failed")}
+              </div>
+            )}
+
+            {actionError && (
+              <div style={{ background: "#450a0a", border: "1px solid #991b1b", padding: "10px 14px", borderRadius: 8, marginBottom: 12, fontSize: 14, color: "#fca5a5" }}>
+                {getErrorMessage(actionError, "Action failed")}
+              </div>
+            )}
+
+            {/* Map */}
+            <div style={{ ...cardStyle, padding: 0, overflow: "hidden" }}>
+              <RoutePreviewMap
+                pickup={mapPickup}
+                dropoff={mapDropoff}
+                route_polyline={mapPolyline}
+                height={420}
+              />
+            </div>
+
+            {/* Address inputs */}
+            <div style={cardStyle}>
+              <p style={{ margin: "0 0 10px", fontWeight: 600, fontSize: 14, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.06em" }}>Route</p>
+
+              <div style={{ display: "grid", gap: 10 }}>
+                <div>
+                  <label style={{ fontSize: 13, color: "#64748b", display: "block", marginBottom: 4 }}>Pickup</label>
+                  <input
+                    style={inputStyle}
+                    value={pickup_address}
+                    onChange={(e) => setPickupAddress(e.target.value)}
+                    placeholder="Pickup address (e.g., 100 King St W, Toronto, ON)"
+                  />
+                </div>
+
+                <div>
+                  <label style={{ fontSize: 13, color: "#64748b", display: "block", marginBottom: 4 }}>Dropoff</label>
+                  <input
+                    style={inputStyle}
+                    value={dropoff_address}
+                    onChange={(e) => setDropoffAddress(e.target.value)}
+                    placeholder="Dropoff address (e.g., 1 Yonge St, Toronto, ON)"
+                  />
+                </div>
+
+                <button
+                  style={{ ...btnPrimaryStyle, opacity: estStatus === "loading" ? 0.6 : 1 }}
+                  onClick={onEstimate}
+                  disabled={estStatus === "loading"}
+                >
+                  {estStatus === "loading" ? "Estimating…" : "Get Estimate"}
+                </button>
+              </div>
+            </div>
+
+            {/* Estimate result */}
+            {hasEstimated && estimate && (
+              <div style={cardStyle}>
+                <p style={{ margin: "0 0 12px", fontWeight: 600, fontSize: 14, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.06em" }}>Fare Estimate</p>
+
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 14 }}>
+                  <div style={{ background: "#0f172a", borderRadius: 10, padding: "12px 16px" }}>
+                    <p style={{ margin: "0 0 4px", fontSize: 12, color: "#64748b" }}>Distance</p>
+                    <p style={{ margin: 0, fontSize: 18, fontWeight: 700 }}>{estimate.distance_km} km</p>
+                  </div>
+                  <div style={{ background: "#0f172a", borderRadius: 10, padding: "12px 16px" }}>
+                    <p style={{ margin: "0 0 4px", fontSize: 12, color: "#64748b" }}>Duration</p>
+                    <p style={{ margin: 0, fontSize: 18, fontWeight: 700 }}>{estimate.duration_minutes} min</p>
+                  </div>
+                  <div style={{ background: "#0f172a", borderRadius: 10, padding: "12px 16px", gridColumn: "1 / -1" }}>
+                    <p style={{ margin: "0 0 4px", fontSize: 12, color: "#64748b" }}>Fare</p>
+                    <p style={{ margin: 0, fontSize: 22, fontWeight: 700, color: "#6366f1" }}>
+                      {estimate.fare?.total} {estimate.fare?.currency}
+                    </p>
+                  </div>
+                </div>
+
+                <p style={{ margin: "0 0 14px", fontSize: 12, color: "#64748b" }}>
+                  Expires: {new Date(estimate.expiresAt).toLocaleString()}
+                </p>
+
+                <button style={btnPrimaryStyle} onClick={onCreateTrip}>
+                  Confirm &amp; Create Trip
+                </button>
+              </div>
+            )}
+
+            {trip && (
+              <div style={{ marginTop: 10, opacity: 0.7, fontSize: 13, color: "#94a3b8" }}>
+                Current trip: {trip._id}
+              </div>
+            )}
+          </>
+        )}
+
+      </div>
     </div>
   );
 }
