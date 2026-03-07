@@ -5,6 +5,8 @@ import { createEstimate } from "../../features/estimates/estimatesSlice";
 import { createTrip } from "../../features/trips/tripsSlice";
 import { getErrorMessage } from "../../utils/errors";
 
+import RoutePreviewMap from "../../features/estimates/components/RoutePreviewMap";
+
 export default function RiderRequestPage() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -20,8 +22,12 @@ export default function RiderRequestPage() {
 
   const trip = useAppSelector((s) => s.trips.current);
 
-  const [pickup, setPickup] = useState({ lat: 43.6532, lng: -79.3832 });
-  const [dropoff, setDropoff] = useState({ lat: 43.7, lng: -79.4 });
+  const [pickup_address, setPickupAddress] = useState(
+    "100 King St W, Toronto, ON"
+  );
+  const [dropoff_address, setDropoffAddress] = useState(
+    "1 Yonge St, Toronto, ON"
+  );
   const [actionError, setActionError] = useState(null);
 
   if (!vehicleId) {
@@ -35,7 +41,7 @@ export default function RiderRequestPage() {
 
   async function onEstimate() {
     setActionError(null);
-    await dispatch(createEstimate({ pickup, dropoff }));
+    await dispatch(createEstimate({ pickup_address, dropoff_address }));
   }
 
   async function onCreateTrip() {
@@ -46,9 +52,7 @@ export default function RiderRequestPage() {
       if (!estId)
         throw new Error("No estimateId found. Create an estimate first.");
 
-      const created = await dispatch(
-        createTrip({ estimateId: estId, vehicleId })
-      );
+      const created = await dispatch(createTrip({ estimateId: estId, vehicleId }));
 
       if (!createTrip.fulfilled.match(created)) {
         throw created.payload || created.error;
@@ -63,9 +67,14 @@ export default function RiderRequestPage() {
     }
   }
 
+  const mapPickup = estimate?.pickup_geo || null;
+  const mapDropoff = estimate?.dropoff_geo || null;
+  const mapPolyline = estimate?.route_polyline || null;
+
   return (
     <div style={{ padding: 20, maxWidth: 900, margin: "0 auto" }}>
       <h2>Request a Driver</h2>
+
       <div style={{ marginBottom: 10 }}>
         Using vehicle: <b>{vehicleId}</b>
       </div>
@@ -82,37 +91,28 @@ export default function RiderRequestPage() {
         </div>
       )}
 
+      <div style={{ marginBottom: 14 }}>
+        <RoutePreviewMap
+          pickup={mapPickup}
+          dropoff={mapDropoff}
+          route_polyline={mapPolyline}
+          height={420}
+        />
+      </div>
+
       <div style={{ display: "grid", gap: 10, maxWidth: 520 }}>
         <h4>Pickup</h4>
         <input
-          value={pickup.lat}
-          onChange={(e) =>
-            setPickup((p) => ({ ...p, lat: Number(e.target.value) }))
-          }
-          placeholder="pickup lat"
-        />
-        <input
-          value={pickup.lng}
-          onChange={(e) =>
-            setPickup((p) => ({ ...p, lng: Number(e.target.value) }))
-          }
-          placeholder="pickup lng"
+          value={pickup_address}
+          onChange={(e) => setPickupAddress(e.target.value)}
+          placeholder="Pickup address (e.g., 100 King St W, Toronto, ON)"
         />
 
         <h4>Dropoff</h4>
         <input
-          value={dropoff.lat}
-          onChange={(e) =>
-            setDropoff((p) => ({ ...p, lat: Number(e.target.value) }))
-          }
-          placeholder="dropoff lat"
-        />
-        <input
-          value={dropoff.lng}
-          onChange={(e) =>
-            setDropoff((p) => ({ ...p, lng: Number(e.target.value) }))
-          }
-          placeholder="dropoff lng"
+          value={dropoff_address}
+          onChange={(e) => setDropoffAddress(e.target.value)}
+          placeholder="Dropoff address (e.g., 1 Yonge St, Toronto, ON)"
         />
 
         <button onClick={onEstimate} disabled={estStatus === "loading"}>
@@ -137,9 +137,7 @@ export default function RiderRequestPage() {
           <div>
             Fare: {estimate.fare?.total} {estimate.fare?.currency}
           </div>
-          <div>
-            Expires: {new Date(estimate.expiresAt).toLocaleString()}
-          </div>
+          <div>Expires: {new Date(estimate.expiresAt).toLocaleString()}</div>
 
           <button style={{ marginTop: 12 }} onClick={onCreateTrip}>
             Create Trip

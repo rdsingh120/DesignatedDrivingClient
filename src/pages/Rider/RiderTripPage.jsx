@@ -3,6 +3,8 @@ import { useParams } from "react-router-dom";
 import { useAppSelector } from "../../app/hooks";
 import { useTripPolling } from "../../hooks/useTripPolling";
 
+import RoutePreviewMap from "../../features/estimates/components/RoutePreviewMap";
+
 export default function RiderTripPage() {
   const { id } = useParams();
 
@@ -17,21 +19,61 @@ export default function RiderTripPage() {
   return (
     <div style={{ padding: 20, maxWidth: 900, margin: "0 auto" }}>
       <h2>Trip</h2>
-      <div>Trip ID: <b>{id}</b></div>
+      <div>
+        Trip ID: <b>{id}</b>
+      </div>
 
       {!trip ? (
         <div style={{ marginTop: 12 }}>Loading trip…</div>
       ) : (
-        <div style={{ marginTop: 12, border: "1px solid #ddd", padding: 12, borderRadius: 8 }}>
-          <div>Status: <b>{trip.status}</b></div>
-          <div>Fare: {trip.fare_amount} {trip.currency}</div>
+        <>
+          <div style={{ marginTop: 12, marginBottom: 14 }}>
+            <RoutePreviewMap
+              pickup={trip.pickup_geo}
+              dropoff={trip.dropoff_geo}
+              route_polyline={trip.route_polyline}
+              height={420}
+            />
+          </div>
 
-          <hr />
+          <div
+            style={{
+              marginTop: 12,
+              border: "1px solid #ddd",
+              padding: 12,
+              borderRadius: 8,
+            }}
+          >
+            <div>
+              Status: <b>{trip.status}</b>
+            </div>
+            <div>
+              Fare: {trip.fare_amount} {trip.currency}
+            </div>
 
-          <div><b>Rider</b>: {trip.rider?.name || trip.rider?._id || "—"}</div>
-          <div><b>Driver</b>: {trip.driverProfile?.user?.name || "—"}</div>
-          <div><b>Vehicle</b>: {trip.vehicle?.make} {trip.vehicle?.model} ({trip.vehicle?.plateNumber})</div>
-        </div>
+            <hr />
+
+            <div>
+              <b>Pickup</b>: {trip.pickup_display_address || trip.pickup_address}
+            </div>
+            <div>
+              <b>Dropoff</b>: {trip.dropoff_display_address || trip.dropoff_address}
+            </div>
+
+            <hr />
+
+            <div>
+              <b>Rider</b>: {trip.rider?.name || trip.rider?._id || "—"}
+            </div>
+            <div>
+              <b>Driver</b>: {trip.driverProfile?.user?.name || "—"}
+            </div>
+            <div>
+              <b>Vehicle</b>: {trip.vehicle?.make} {trip.vehicle?.model} (
+              {trip.vehicle?.plateNumber})
+            </div>
+          </div>
+        </>
       )}
     </div>
   );
