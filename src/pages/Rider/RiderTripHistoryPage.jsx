@@ -2,16 +2,9 @@ import { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { fetchMyTrips } from "../../features/trips/tripsSlice";
 import { Link, useNavigate } from "react-router-dom";
-import { colors, alpha, pageStyle, cardStyle, tripStatusColors, errorBanner } from "../../styles/theme";
+import { colors, pageStyle, cardStyle, errorBanner } from "../../styles/theme";
 
-function StatusBadge({ status }) {
-  const s = tripStatusColors[status] || { bg: alpha.neutral15, color: colors.textSecondary, label: status };
-  return (
-    <span style={{ background: s.bg, color: s.color, fontSize: 12, fontWeight: 600, padding: "3px 10px", borderRadius: 20, letterSpacing: "0.04em" }}>
-      {s.label}
-    </span>
-  );
-}
+import StatusBadge from "./components/StatusBadge";
 
 export default function RiderTripHistoryPage() {
   const dispatch = useAppDispatch();
