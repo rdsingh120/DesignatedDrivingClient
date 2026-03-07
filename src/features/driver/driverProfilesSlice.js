@@ -5,6 +5,7 @@ import {
   apiUpdateMyDriverStatus as updateStatus,
   apiCreateMyDriverProfile as createMe,
 } from "../../api/driverClient";
+import { acceptTrip, cancelTrip, completeTrip } from "../trips/tripsSlice";
 
 export const getMyDriverProfile = createAsyncThunk(
   "driverProfiles/getMe",
@@ -93,6 +94,25 @@ const driverProfilesSlice = createSlice({
     b.addCase(createMyDriverProfile.rejected, (s, a) => {
       s.loading = false;
       s.error = a.payload || "Failed to create driver profile";
+    });
+
+    // sync profile after trip lifecycle actions
+    b.addCase(acceptTrip.fulfilled, (s, a) => {
+      if (s.me && a.payload.driverProfile) {
+        s.me = a.payload.driverProfile;
+      }
+    });
+    b.addCase(cancelTrip.fulfilled, (s) => {
+      if (s.me) {
+        s.me.activeTrip = null;
+        s.me.availability = "AVAILABLE";
+      }
+    });
+    b.addCase(completeTrip.fulfilled, (s) => {
+      if (s.me) {
+        s.me.activeTrip = null;
+        s.me.availability = "AVAILABLE";
+      }
     });
   },
 });
