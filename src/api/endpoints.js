@@ -23,6 +23,7 @@ export const API = {
     ARRIVE: (id) => `/api/trips/${id}/arrive`,
     START: (id) => `/api/trips/${id}/start`,
     COMPLETE: (id) => `/api/trips/${id}/complete`,
+    CANCEL: (id) => `/api/trips/${id}/cancel`,
   },
 
   DRIVER_PROFILES: {

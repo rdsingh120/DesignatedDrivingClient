@@ -9,6 +9,7 @@ import {
   apiArriveTrip,
   apiStartTrip,
   apiCompleteTrip,
+  apiCancelTrip,
 } from "../../api/client";
 import { getErrorMessage } from "../../utils/errors";
 
@@ -49,7 +50,7 @@ export const acceptTrip = createAsyncThunk(
   async (tripId, thunkAPI) => {
     try {
       const { data } = await apiAcceptTrip(tripId);
-      return data.trip;
+      return { trip: data.trip, driverProfile: data.driverProfile };
     } catch (err) {
       return thunkAPI.rejectWithValue(getErrorMessage(err));
     }
@@ -96,6 +97,15 @@ export const startTrip = createAsyncThunk("trips/start", async (tripId, thunkAPI
 export const completeTrip = createAsyncThunk("trips/complete", async (tripId, thunkAPI) => {
   try {
     const { data } = await apiCompleteTrip(tripId);
+    return data.trip;
+  } catch (err) {
+    return thunkAPI.rejectWithValue(getErrorMessage(err));
+  }
+});
+
+export const cancelTrip = createAsyncThunk("trips/cancel", async (tripId, thunkAPI) => {
+  try {
+    const { data } = await apiCancelTrip(tripId);
     return data.trip;
   } catch (err) {
     return thunkAPI.rejectWithValue(getErrorMessage(err));
@@ -157,6 +167,11 @@ const tripsSlice = createSlice({
       .addCase(completeTrip.fulfilled, (s, a) => { s.loading = false; s.current = a.payload; })
       .addCase(completeTrip.rejected, (s, a) => { s.loading = false; s.error = a.payload || "Failed to complete"; })
 
+      // cancel (driver releases trip back to open pool)
+      .addCase(cancelTrip.pending, (s) => { s.loading = true; s.error = null; })
+      .addCase(cancelTrip.fulfilled, (s) => { s.loading = false; s.current = null; })
+      .addCase(cancelTrip.rejected, (s, a) => { s.loading = false; s.error = a.payload || "Failed to cancel"; })
+
       // fetch open trips
       .addCase(fetchOpenTrips.pending, (s) => {
         s.loading = true;
@@ -175,8 +190,8 @@ const tripsSlice = createSlice({
       .addCase(acceptTrip.pending, (s) => { s.loading = true; s.error = null; })
       .addCase(acceptTrip.fulfilled, (s, a) => {
         s.loading = false;
-        s.current = a.payload;
-        s.open = s.open.filter(t => t._id !== a.payload._id);
+        s.current = a.payload.trip;
+        s.open = s.open.filter(t => t._id !== a.payload.trip._id);
       })
       .addCase(acceptTrip.rejected, (s, a) => {
         s.loading = false;
