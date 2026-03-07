@@ -3,31 +3,32 @@ import { Link } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { logout, selectUser } from "../../features/auth/authSlice";
 import { Car, Clock, LogOut, MapPin, User } from "lucide-react";
+import { colors, alpha, gradients } from "../../styles/theme";
 
 export default function RiderDashboardPage() {
   const dispatch = useAppDispatch();
   const user = useAppSelector(selectUser);
 
   return (
-    <div style={{ minHeight: "100vh", background: "linear-gradient(135deg, #0f172a 0%, #1e293b 100%)", color: "#f1f5f9", fontFamily: "system-ui, sans-serif" }}>
+    <div style={{ minHeight: "100vh", background: gradients.page, color: colors.textPrimary, fontFamily: "system-ui, sans-serif" }}>
 
       {/* Header */}
-      <header style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "16px 24px", borderBottom: "1px solid #334155" }}>
+      <header style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "16px 24px", borderBottom: `1px solid ${colors.border}` }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <div style={{ width: 40, height: 40, borderRadius: "50%", background: "linear-gradient(135deg, #6366f1, #8b5cf6)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <div style={{ width: 40, height: 40, borderRadius: "50%", background: gradients.avatar, display: "flex", alignItems: "center", justifyContent: "center" }}>
             <User size={20} color="#fff" />
           </div>
           <div>
-            <p style={{ margin: 0, fontSize: 12, color: "#94a3b8" }}>Welcome back</p>
+            <p style={{ margin: 0, fontSize: 12, color: colors.textSecondary }}>Welcome back</p>
             <p style={{ margin: 0, fontWeight: 600, fontSize: 15 }}>{user?.name || "Rider"}</p>
           </div>
         </div>
 
         <button
           onClick={() => dispatch(logout())}
-          style={{ display: "flex", alignItems: "center", gap: 6, background: "none", border: "1px solid #334155", color: "#94a3b8", padding: "8px 14px", borderRadius: 8, cursor: "pointer", fontSize: 14, transition: "all 0.15s" }}
-          onMouseEnter={(e) => { e.currentTarget.style.color = "#f1f5f9"; e.currentTarget.style.borderColor = "#64748b"; }}
-          onMouseLeave={(e) => { e.currentTarget.style.color = "#94a3b8"; e.currentTarget.style.borderColor = "#334155"; }}
+          style={{ display: "flex", alignItems: "center", gap: 6, background: "none", border: `1px solid ${colors.border}`, color: colors.textSecondary, padding: "8px 14px", borderRadius: 8, cursor: "pointer", fontSize: 14, transition: "all 0.15s" }}
+          onMouseEnter={(e) => { e.currentTarget.style.color = colors.textPrimary; e.currentTarget.style.borderColor = colors.textFaint; }}
+          onMouseLeave={(e) => { e.currentTarget.style.color = colors.textSecondary; e.currentTarget.style.borderColor = colors.border; }}
         >
           <LogOut size={16} />
           Sign out
@@ -36,78 +37,69 @@ export default function RiderDashboardPage() {
 
       {/* Hero */}
       <section style={{ padding: "48px 24px 32px" }}>
-        <p style={{ margin: "0 0 6px", fontSize: 13, color: "#6366f1", fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase" }}>Rider Dashboard</p>
+        <p style={{ margin: "0 0 6px", fontSize: 13, color: colors.primary, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase" }}>Rider Dashboard</p>
         <h1 style={{ margin: 0, fontSize: 32, fontWeight: 700, lineHeight: 1.2 }}>Where to today?</h1>
-        <p style={{ margin: "10px 0 0", color: "#94a3b8", fontSize: 15 }}>Book a safe, reliable designated driver in minutes.</p>
+        <p style={{ margin: "10px 0 0", color: colors.textSecondary, fontSize: 15 }}>Book a safe, reliable designated driver in minutes.</p>
       </section>
 
       {/* Quick action cards */}
       <section style={{ padding: "0 24px", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 16 }}>
 
         {/* Book a Ride */}
-        <Link
-          to="/rider/request"
-          style={{ textDecoration: "none" }}
-        >
+        <Link to="/rider/request" style={{ textDecoration: "none" }}>
           <div
-            style={{ background: "linear-gradient(135deg, #4f46e5, #7c3aed)", borderRadius: 16, padding: 24, boxShadow: "0 8px 32px rgba(99,102,241,0.3)", cursor: "pointer", transition: "transform 0.15s, box-shadow 0.15s" }}
-            onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = "0 12px 40px rgba(99,102,241,0.45)"; }}
-            onMouseLeave={(e) => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 8px 32px rgba(99,102,241,0.3)"; }}
+            style={{ background: gradients.primary, borderRadius: 16, padding: 24, boxShadow: `0 8px 32px ${alpha.primary30}`, cursor: "pointer", transition: "transform 0.15s, box-shadow 0.15s" }}
+            onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = `0 12px 40px ${alpha.primary40}`; }}
+            onMouseLeave={(e) => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = `0 8px 32px ${alpha.primary30}`; }}
           >
-            <div style={{ width: 44, height: 44, borderRadius: 12, background: "rgba(255,255,255,0.15)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 16 }}>
+            <div style={{ width: 44, height: 44, borderRadius: 12, background: alpha.white15, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 16 }}>
               <Car size={24} color="#fff" />
             </div>
             <h2 style={{ margin: "0 0 6px", fontSize: 18, fontWeight: 700, color: "#fff" }}>Book a Ride</h2>
-            <p style={{ margin: 0, fontSize: 13, color: "#c7d2fe" }}>Select a vehicle and request a driver</p>
+            <p style={{ margin: 0, fontSize: 13, color: colors.primaryPale }}>Select a vehicle and request a driver</p>
           </div>
         </Link>
 
         {/* My Vehicles */}
-        <Link
-          to="/rider/vehicles"
-          style={{ textDecoration: "none" }}
-        >
+        <Link to="/rider/vehicles" style={{ textDecoration: "none" }}>
           <div
-            style={{ background: "#1e293b", border: "1px solid #334155", borderRadius: 16, padding: 24, cursor: "pointer", transition: "transform 0.15s, border-color 0.15s, box-shadow 0.15s" }}
-            onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.borderColor = "#6366f1"; e.currentTarget.style.boxShadow = "0 8px 24px rgba(0,0,0,0.3)"; }}
-            onMouseLeave={(e) => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.borderColor = "#334155"; e.currentTarget.style.boxShadow = "none"; }}
+            style={{ background: colors.bgBase, border: `1px solid ${colors.border}`, borderRadius: 16, padding: 24, cursor: "pointer", transition: "transform 0.15s, border-color 0.15s, box-shadow 0.15s" }}
+            onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.borderColor = colors.primary; e.currentTarget.style.boxShadow = "0 8px 24px rgba(0,0,0,0.3)"; }}
+            onMouseLeave={(e) => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.borderColor = colors.border; e.currentTarget.style.boxShadow = "none"; }}
           >
-            <div style={{ width: 44, height: 44, borderRadius: 12, background: "rgba(16,185,129,0.15)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 16 }}>
-              <MapPin size={24} color="#10b981" />
+            <div style={{ width: 44, height: 44, borderRadius: 12, background: alpha.success15, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 16 }}>
+              <MapPin size={24} color={colors.success} />
             </div>
-            <h2 style={{ margin: "0 0 6px", fontSize: 18, fontWeight: 700, color: "#f1f5f9" }}>My Vehicles</h2>
-            <p style={{ margin: 0, fontSize: 13, color: "#64748b" }}>Add or manage your registered vehicles</p>
+            <h2 style={{ margin: "0 0 6px", fontSize: 18, fontWeight: 700, color: colors.textPrimary }}>My Vehicles</h2>
+            <p style={{ margin: 0, fontSize: 13, color: colors.textMuted }}>Add or manage your registered vehicles</p>
           </div>
         </Link>
 
         {/* Trip History */}
-        <Link
-          to="/rider/history"
-          style={{ textDecoration: "none" }}
-        >
+        <Link to="/rider/history" style={{ textDecoration: "none" }}>
           <div
-            style={{ background: "#1e293b", border: "1px solid #334155", borderRadius: 16, padding: 24, cursor: "pointer", transition: "transform 0.15s, border-color 0.15s, box-shadow 0.15s" }}
-            onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.borderColor = "#f59e0b"; e.currentTarget.style.boxShadow = "0 8px 24px rgba(0,0,0,0.3)"; }}
-            onMouseLeave={(e) => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.borderColor = "#334155"; e.currentTarget.style.boxShadow = "none"; }}
+            style={{ background: colors.bgBase, border: `1px solid ${colors.border}`, borderRadius: 16, padding: 24, cursor: "pointer", transition: "transform 0.15s, border-color 0.15s, box-shadow 0.15s" }}
+            onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.borderColor = colors.warning; e.currentTarget.style.boxShadow = "0 8px 24px rgba(0,0,0,0.3)"; }}
+            onMouseLeave={(e) => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.borderColor = colors.border; e.currentTarget.style.boxShadow = "none"; }}
           >
-            <div style={{ width: 44, height: 44, borderRadius: 12, background: "rgba(245,158,11,0.15)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 16 }}>
-              <Clock size={24} color="#f59e0b" />
+            <div style={{ width: 44, height: 44, borderRadius: 12, background: alpha.warning15, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 16 }}>
+              <Clock size={24} color={colors.warning} />
             </div>
-            <h2 style={{ margin: "0 0 6px", fontSize: 18, fontWeight: 700, color: "#f1f5f9" }}>Trip History</h2>
-            <p style={{ margin: 0, fontSize: 13, color: "#64748b" }}>View all your past rides</p>
+            <h2 style={{ margin: "0 0 6px", fontSize: 18, fontWeight: 700, color: colors.textPrimary }}>Trip History</h2>
+            <p style={{ margin: 0, fontSize: 13, color: colors.textMuted }}>View all your past rides</p>
           </div>
         </Link>
 
       </section>
 
       {/* Info strip */}
-      <section style={{ margin: "40px 24px 0", padding: 20, background: "#1e293b", border: "1px solid #334155", borderRadius: 16, display: "flex", alignItems: "center", gap: 16 }}>
-        <div style={{ width: 36, height: 36, borderRadius: 10, background: "rgba(99,102,241,0.15)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-          <Car size={18} color="#6366f1" />
+      <section style={{ margin: "40px 24px 0", padding: 20, background: colors.bgBase, border: `1px solid ${colors.border}`, borderRadius: 16, display: "flex", alignItems: "center", gap: 16 }}>
+        <div style={{ width: 36, height: 36, borderRadius: 10, background: alpha.primary15, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+          <Car size={18} color={colors.primary} />
         </div>
         <div>
-          <p style={{ margin: 0, fontWeight: 600, fontSize: 14, color: "#f1f5f9" }}>How it works</p>
-          <p style={{ margin: "4px 0 0", fontSize: 13, color: "#64748b" }}>
+          <p style={{ margin: 0, fontWeight: 600, fontSize: 14, color: colors.textPrimary }}>How it works</p>
+          <p style={{ margin: "4px 0 0", fontSize: 13, color: colors.textMuted }}>
             Add a vehicle &rarr; Get a fare estimate &rarr; A designated driver is assigned to you &rarr; Arrive safely.
           </p>
         </div>

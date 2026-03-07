@@ -5,57 +5,9 @@ import { createEstimate } from "../../features/estimates/estimatesSlice";
 import { createTrip } from "../../features/trips/tripsSlice";
 import { fetchMyVehicles } from "../../features/vehicles/vehiclesSlice";
 import { getErrorMessage } from "../../utils/errors";
+import { colors, pageStyle, cardStyle, inputStyle, btn, errorBanner } from "../../styles/theme";
 
 import RoutePreviewMap from "../../features/estimates/components/RoutePreviewMap";
-
-const pageStyle = {
-  minHeight: "100vh",
-  background: "linear-gradient(135deg, #0f172a 0%, #1e293b 100%)",
-  color: "#f1f5f9",
-  fontFamily: "system-ui, sans-serif",
-  padding: "0 0 40px",
-};
-
-const cardStyle = {
-  background: "#1e293b",
-  border: "1px solid #334155",
-  borderRadius: 16,
-  padding: 20,
-  marginBottom: 16,
-};
-
-const inputStyle = {
-  width: "100%",
-  padding: "10px 12px",
-  background: "#0f172a",
-  border: "1px solid #334155",
-  borderRadius: 8,
-  color: "#f1f5f9",
-  fontSize: 14,
-  boxSizing: "border-box",
-};
-
-const btnPrimaryStyle = {
-  padding: "10px 20px",
-  background: "linear-gradient(135deg, #4f46e5, #7c3aed)",
-  color: "#fff",
-  border: "none",
-  borderRadius: 8,
-  cursor: "pointer",
-  fontWeight: 600,
-  fontSize: 14,
-};
-
-const btnSecondaryStyle = {
-  padding: "10px 20px",
-  background: "#334155",
-  color: "#f1f5f9",
-  border: "none",
-  borderRadius: 8,
-  cursor: "pointer",
-  fontWeight: 600,
-  fontSize: 14,
-};
 
 export default function RiderRequestPage() {
   const dispatch = useAppDispatch();
@@ -142,7 +94,7 @@ export default function RiderRequestPage() {
       <div style={{ padding: "20px 24px 0", marginBottom: 24 }}>
         <button
           onClick={() => navigate(-1)}
-          style={{ background: "none", border: "none", color: "#94a3b8", cursor: "pointer", fontSize: 14, padding: 0, marginBottom: 16 }}
+          style={{ background: "none", border: "none", color: colors.textSecondary, cursor: "pointer", fontSize: 14, padding: 0, marginBottom: 16 }}
         >
           ← Back
         </button>
@@ -153,19 +105,19 @@ export default function RiderRequestPage() {
 
         {/* Vehicle selection — inline picker when no vehicleId in URL */}
         <div style={cardStyle}>
-          <p style={{ margin: "0 0 10px", fontWeight: 600, fontSize: 14, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.06em" }}>Vehicle</p>
+          <p style={{ margin: "0 0 10px", fontWeight: 600, fontSize: 14, color: colors.textSecondary, textTransform: "uppercase", letterSpacing: "0.06em" }}>Vehicle</p>
 
           {urlVehicleId ? (
             // Came from vehicles page — just display it
-            <div style={{ fontSize: 15, color: "#f1f5f9" }}>
+            <div style={{ fontSize: 15, color: colors.textPrimary }}>
               {vehicleLabel}
             </div>
           ) : vehiclesLoading ? (
-            <p style={{ margin: 0, color: "#64748b", fontSize: 14 }}>Loading your vehicles…</p>
+            <p style={{ margin: 0, color: colors.textMuted, fontSize: 14 }}>Loading your vehicles…</p>
           ) : vehicles.length === 0 ? (
             <div>
-              <p style={{ margin: "0 0 10px", color: "#f87171", fontSize: 14 }}>No vehicles found. Add one first.</p>
-              <button style={btnSecondaryStyle} onClick={() => navigate("/rider/vehicles")}>
+              <p style={{ margin: "0 0 10px", color: colors.dangerLight, fontSize: 14 }}>No vehicles found. Add one first.</p>
+              <button style={btn.secondary} onClick={() => navigate("/rider/vehicles")}>
                 Go to My Vehicles
               </button>
             </div>
@@ -190,13 +142,13 @@ export default function RiderRequestPage() {
         {vehicleId && (
           <>
             {estError && (
-              <div style={{ background: "#450a0a", border: "1px solid #991b1b", padding: "10px 14px", borderRadius: 8, marginBottom: 12, fontSize: 14, color: "#fca5a5" }}>
+              <div style={errorBanner}>
                 {getErrorMessage(estError, "Estimate failed")}
               </div>
             )}
 
             {actionError && (
-              <div style={{ background: "#450a0a", border: "1px solid #991b1b", padding: "10px 14px", borderRadius: 8, marginBottom: 12, fontSize: 14, color: "#fca5a5" }}>
+              <div style={errorBanner}>
                 {getErrorMessage(actionError, "Action failed")}
               </div>
             )}
@@ -213,11 +165,11 @@ export default function RiderRequestPage() {
 
             {/* Address inputs */}
             <div style={cardStyle}>
-              <p style={{ margin: "0 0 10px", fontWeight: 600, fontSize: 14, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.06em" }}>Route</p>
+              <p style={{ margin: "0 0 10px", fontWeight: 600, fontSize: 14, color: colors.textSecondary, textTransform: "uppercase", letterSpacing: "0.06em" }}>Route</p>
 
               <div style={{ display: "grid", gap: 10 }}>
                 <div>
-                  <label style={{ fontSize: 13, color: "#64748b", display: "block", marginBottom: 4 }}>Pickup</label>
+                  <label style={{ fontSize: 13, color: colors.textMuted, display: "block", marginBottom: 4 }}>Pickup</label>
                   <input
                     style={inputStyle}
                     value={pickup_address}
@@ -227,7 +179,7 @@ export default function RiderRequestPage() {
                 </div>
 
                 <div>
-                  <label style={{ fontSize: 13, color: "#64748b", display: "block", marginBottom: 4 }}>Dropoff</label>
+                  <label style={{ fontSize: 13, color: colors.textMuted, display: "block", marginBottom: 4 }}>Dropoff</label>
                   <input
                     style={inputStyle}
                     value={dropoff_address}
@@ -237,7 +189,7 @@ export default function RiderRequestPage() {
                 </div>
 
                 <button
-                  style={{ ...btnPrimaryStyle, opacity: estStatus === "loading" ? 0.6 : 1 }}
+                  style={{ ...btn.primary, opacity: estStatus === "loading" ? 0.6 : 1 }}
                   onClick={onEstimate}
                   disabled={estStatus === "loading"}
                 >
@@ -249,37 +201,37 @@ export default function RiderRequestPage() {
             {/* Estimate result */}
             {hasEstimated && estimate && (
               <div style={cardStyle}>
-                <p style={{ margin: "0 0 12px", fontWeight: 600, fontSize: 14, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.06em" }}>Fare Estimate</p>
+                <p style={{ margin: "0 0 12px", fontWeight: 600, fontSize: 14, color: colors.textSecondary, textTransform: "uppercase", letterSpacing: "0.06em" }}>Fare Estimate</p>
 
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 14 }}>
-                  <div style={{ background: "#0f172a", borderRadius: 10, padding: "12px 16px" }}>
-                    <p style={{ margin: "0 0 4px", fontSize: 12, color: "#64748b" }}>Distance</p>
+                  <div style={{ background: colors.bgDeep, borderRadius: 10, padding: "12px 16px" }}>
+                    <p style={{ margin: "0 0 4px", fontSize: 12, color: colors.textMuted }}>Distance</p>
                     <p style={{ margin: 0, fontSize: 18, fontWeight: 700 }}>{estimate.distance_km} km</p>
                   </div>
-                  <div style={{ background: "#0f172a", borderRadius: 10, padding: "12px 16px" }}>
-                    <p style={{ margin: "0 0 4px", fontSize: 12, color: "#64748b" }}>Duration</p>
+                  <div style={{ background: colors.bgDeep, borderRadius: 10, padding: "12px 16px" }}>
+                    <p style={{ margin: "0 0 4px", fontSize: 12, color: colors.textMuted }}>Duration</p>
                     <p style={{ margin: 0, fontSize: 18, fontWeight: 700 }}>{estimate.duration_minutes} min</p>
                   </div>
-                  <div style={{ background: "#0f172a", borderRadius: 10, padding: "12px 16px", gridColumn: "1 / -1" }}>
-                    <p style={{ margin: "0 0 4px", fontSize: 12, color: "#64748b" }}>Fare</p>
-                    <p style={{ margin: 0, fontSize: 22, fontWeight: 700, color: "#6366f1" }}>
+                  <div style={{ background: colors.bgDeep, borderRadius: 10, padding: "12px 16px", gridColumn: "1 / -1" }}>
+                    <p style={{ margin: "0 0 4px", fontSize: 12, color: colors.textMuted }}>Fare</p>
+                    <p style={{ margin: 0, fontSize: 22, fontWeight: 700, color: colors.primary }}>
                       {estimate.fare?.total} {estimate.fare?.currency}
                     </p>
                   </div>
                 </div>
 
-                <p style={{ margin: "0 0 14px", fontSize: 12, color: "#64748b" }}>
+                <p style={{ margin: "0 0 14px", fontSize: 12, color: colors.textMuted }}>
                   Expires: {new Date(estimate.expiresAt).toLocaleString()}
                 </p>
 
-                <button style={btnPrimaryStyle} onClick={onCreateTrip}>
+                <button style={btn.primary} onClick={onCreateTrip}>
                   Confirm &amp; Create Trip
                 </button>
               </div>
             )}
 
             {trip && (
-              <div style={{ marginTop: 10, opacity: 0.7, fontSize: 13, color: "#94a3b8" }}>
+              <div style={{ marginTop: 10, opacity: 0.7, fontSize: 13, color: colors.textSecondary }}>
                 Current trip: {trip._id}
               </div>
             )}
