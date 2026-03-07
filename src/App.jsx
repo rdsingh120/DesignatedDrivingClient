@@ -10,6 +10,7 @@ import RegisterPage from "./pages/RegisterPage";
 import { useAppDispatch } from "./app/hooks";
 import { logout } from "./features/auth/authSlice";
 
+import RiderDashboardPage from "./pages/Rider/RiderDashboardPage";
 import RiderVehiclesPage from "./pages/Rider/RiderVehiclesPage";
 import RiderRequestPage from "./pages/Rider/RiderRequestPage";
 import RiderTripPage from "./pages/Rider/RiderTripPage";
@@ -48,7 +49,8 @@ export default function App() {
 
           {/* Rider (protected + role-gated) */}
           <Route element={<RoleRoute allow={["RIDER"]} />}>
-            <Route path="/rider" element={<RiderVehiclesPage />} />
+            <Route path="/rider" element={<RiderDashboardPage />} />
+            <Route path="/rider/vehicles" element={<RiderVehiclesPage />} />
             <Route path="/rider/request" element={<RiderRequestPage />} />
             <Route path="/rider/trip/:id" element={<RiderTripPage />} />
             <Route path="/rider/history" element={<RiderTripHistoryPage />} />
