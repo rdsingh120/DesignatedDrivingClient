@@ -1,40 +1,24 @@
 // src/pages/Driver/DriverDashboardPage.jsx
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { useTripPolling } from "../../hooks/useTripPolling";
+import { logout, selectUser } from "../../features/auth/authSlice";
+import { getMyDriverProfile, updateMyDriverStatus } from "../../features/driver/driverProfilesSlice";
+import { fetchTripById, fetchOpenTrips } from "../../features/trips/tripsSlice";
+import { colors, alpha, gradients } from "../../styles/theme";
 
-import RoutePreviewMap from "../../features/estimates/components/RoutePreviewMap";
-
-import {
-  getMyDriverProfile,
-  updateMyDriverStatus,
-  createMyDriverProfile,
-} from "../../features/driver/driverProfilesSlice";
-
-import {
-  fetchTripById,
-  fetchOpenTrips,
-  acceptTrip,
-  arriveTrip,
-  startTrip,
-  completeTrip,
-} from "../../features/trips/tripsSlice";
+import DriverStatusCard from "./components/DriverStatusCard";
+import ActiveTripCard from "./components/ActiveTripCard";
+import TripMarketplace from "./components/TripMarketplace";
 
 export default function DriverDashboardPage() {
   const dispatch = useAppDispatch();
-
-  const trip = useAppSelector((s) => s.trips.current);
-  const openTrips = useAppSelector((s) => s.trips.open);
-  const tripLoading = useAppSelector((s) => s.trips.loading);
-
+  const user = useAppSelector(selectUser);
   const driverProfile = useAppSelector((s) => s.driverProfiles.me);
-  const dpLoading = useAppSelector((s) => s.driverProfiles.loading);
-
   const activeTripId = driverProfile?.activeTrip || null;
+  const isAvailable = driverProfile?.availability === "AVAILABLE";
+  const isVerified = driverProfile?.verificationStatus === "VERIFIED";
 
-  const [selectedTrip, setSelectedTrip] = useState(null);
-
-  // Poll active trip
   useTripPolling(activeTripId);
 
   useEffect(() => {
@@ -47,254 +31,71 @@ export default function DriverDashboardPage() {
     }
   }, [dispatch, activeTripId]);
 
-  // Load marketplace when available + no active trip
   useEffect(() => {
-    if (
-      driverProfile?.availability === "AVAILABLE" &&
-      !driverProfile?.activeTrip
-    ) {
+    if (isAvailable && !activeTripId) {
       dispatch(fetchOpenTrips());
     }
-  }, [dispatch, driverProfile]);
+  }, [dispatch, isAvailable, activeTripId]);
 
-  // Keep selected trip valid when openTrips refreshes
-  useEffect(() => {
-    if (!selectedTrip && openTrips?.length) {
-      setSelectedTrip(openTrips[0]);
-      return;
+  const canShowMarketplace = !activeTripId && isAvailable && isVerified;
+
+  async function handleSignOut() {
+    if (isAvailable) {
+      await dispatch(updateMyDriverStatus({ availability: "OFFLINE" }));
     }
-    if (selectedTrip && openTrips?.length) {
-      const stillThere = openTrips.find((t) => t._id === selectedTrip._id);
-      if (!stillThere) setSelectedTrip(openTrips[0] || null);
-      else setSelectedTrip(stillThere);
-    }
-  }, [openTrips, selectedTrip]);
-
-  const toggleAvailability = () => {
-    const next =
-      driverProfile?.availability === "AVAILABLE" ? "OFFLINE" : "AVAILABLE";
-    dispatch(updateMyDriverStatus({ availability: next }));
-  };
-
-  const tripId = trip?._id;
-
-  const canShowMarketplace =
-    !activeTripId &&
-    driverProfile?.availability === "AVAILABLE" &&
-    driverProfile?.verificationStatus === "VERIFIED";
+    dispatch(logout());
+  }
 
   return (
-    <div style={{ padding: 20, maxWidth: 1100, margin: "0 auto" }}>
-      <h3>Driver Dashboard (Phase 4b — Marketplace)</h3>
+    <div style={{ minHeight: "100vh", background: gradients.page, color: colors.textPrimary, fontFamily: "system-ui, sans-serif", padding: "0 0 60px" }}>
 
-      {/* Driver Status */}
-      <div
-        style={{
-          marginTop: 12,
-          padding: 12,
-          border: "1px solid #ddd",
-          borderRadius: 8,
-        }}
-      >
-        <h4>Status</h4>
-
-        {dpLoading ? (
-          <p>Loading driver profile...</p>
-        ) : driverProfile ? (
-          <>
-            <p>
-              <b>Verification:</b> {driverProfile.verificationStatus}
-            </p>
-            <p>
-              <b>Availability:</b> {driverProfile.availability}
-            </p>
-            <p>
-              <b>Active Trip:</b> {String(driverProfile.activeTrip || "None")}
-            </p>
-
-            <button onClick={toggleAvailability} disabled={dpLoading}>
-              Toggle Available / Offline
-            </button>
-          </>
-        ) : (
-          <>
-            <p>No driver profile found.</p>
-            <button onClick={() => dispatch(createMyDriverProfile())}>
-              Create Driver Profile
-            </button>
-          </>
-        )}
+      {/* Header */}
+      <div style={{ background: "rgba(15,23,42,0.8)", borderBottom: `1px solid ${colors.borderSubtle}`, padding: "16px 28px", display: "flex", alignItems: "center", justifyContent: "space-between", backdropFilter: "blur(8px)", position: "sticky", top: 0, zIndex: 10 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <div style={{ width: 36, height: 36, borderRadius: 10, background: gradients.primary, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}>
+            🚘
+          </div>
+          <div>
+            <div style={{ fontWeight: 700, fontSize: 15 }}>Driver Dashboard</div>
+            <div style={{ fontSize: 12, color: colors.textMuted }}>{user?.name || user?.email || "Driver"}</div>
+          </div>
+        </div>
+        <button
+          onClick={handleSignOut}
+          style={{ background: alpha.dangerBtn, border: `1px solid ${alpha.dangerBtnBorder}`, color: colors.dangerLight, padding: "7px 14px", borderRadius: 8, cursor: "pointer", fontSize: 13, fontWeight: 600 }}
+        >
+          Sign out
+        </button>
       </div>
 
-      {/* Marketplace */}
-      {canShowMarketplace && (
-        <div
-          style={{
-            marginTop: 16,
-            padding: 12,
-            border: "1px solid #ddd",
-            borderRadius: 8,
-          }}
-        >
-          <h4>Open Trips</h4>
+      <div style={{ maxWidth: 1100, margin: "0 auto", padding: "28px 24px 0" }}>
 
-          {openTrips.length === 0 ? (
-            <p>No open trips right now.</p>
-          ) : (
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1.5fr", gap: 12 }}>
-              {/* Left: list */}
-              <div style={{ maxHeight: 520, overflowY: "auto" }}>
-                {openTrips.map((t) => {
-                  const isSelected = selectedTrip?._id === t._id;
-                  return (
-                    <div
-                      key={t._id}
-                      onClick={() => setSelectedTrip(t)}
-                      style={{
-                        cursor: "pointer",
-                        border: isSelected ? "2px solid #333" : "1px solid #eee",
-                        padding: 10,
-                        marginBottom: 8,
-                        borderRadius: 8,
-                        background: isSelected ? "#fafafa" : "white",
-                      }}
-                    >
-                      <div>
-                        <b>Fare:</b> {t.fare_amount} {t.currency}
-                      </div>
-                      <div>
-                        <b>Distance:</b> {t.distance_km} km
-                      </div>
-                      <div>
-                        <b>Status:</b> {t.status}
-                      </div>
-                      <div style={{ marginTop: 6, fontSize: 13, opacity: 0.8 }}>
-                        {t.pickup_display_address || t.pickup_address || "—"}
-                      </div>
-                      <div style={{ fontSize: 13, opacity: 0.8 }}>
-                        {t.dropoff_display_address || t.dropoff_address || "—"}
-                      </div>
+        <DriverStatusCard />
 
-                      <button
-                        style={{ marginTop: 10 }}
-                        disabled={tripLoading}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          dispatch(acceptTrip(t._id));
-                        }}
-                      >
-                        Accept
-                      </button>
-                    </div>
-                  );
-                })}
-              </div>
-
-              {/* Right: map preview */}
-              <div>
-                {!selectedTrip ? (
-                  <div style={{ padding: 12, border: "1px dashed #ccc", borderRadius: 8 }}>
-                    Select a trip to preview the route.
-                  </div>
-                ) : (
-                  <>
-                    <RoutePreviewMap
-                      pickup={selectedTrip.pickup_geo}
-                      dropoff={selectedTrip.dropoff_geo}
-                      route_polyline={selectedTrip.route_polyline}
-                      height={520}
-                    />
-                    <div
-                      style={{
-                        marginTop: 10,
-                        padding: 10,
-                        border: "1px solid #eee",
-                        borderRadius: 8,
-                      }}
-                    >
-                      <div>
-                        <b>Pickup:</b>{" "}
-                        {selectedTrip.pickup_display_address || selectedTrip.pickup_address}
-                      </div>
-                      <div>
-                        <b>Dropoff:</b>{" "}
-                        {selectedTrip.dropoff_display_address || selectedTrip.dropoff_address}
-                      </div>
-                    </div>
-                  </>
-                )}
-              </div>
+        {/* Not verified warning */}
+        {driverProfile && !isVerified && (
+          <div style={{ background: alpha.warning08, border: `1px solid ${alpha.warning25}`, borderRadius: 12, padding: "14px 18px", marginBottom: 16, display: "flex", gap: 12, alignItems: "flex-start" }}>
+            <span style={{ fontSize: 20, flexShrink: 0 }}>⏳</span>
+            <div>
+              <p style={{ margin: "0 0 4px", fontWeight: 700, fontSize: 14, color: colors.warningLight }}>Awaiting verification</p>
+              <p style={{ margin: 0, fontSize: 13, color: colors.textSecondary, lineHeight: 1.5 }}>Your driver profile is under review. You'll be able to accept trips once verified by an admin.</p>
             </div>
-          )}
-        </div>
-      )}
-
-      {/* Current Trip */}
-      <div
-        style={{
-          marginTop: 16,
-          padding: 12,
-          border: "1px solid #ddd",
-          borderRadius: 8,
-        }}
-      >
-        <h4>Current Trip</h4>
-
-        {!activeTripId ? (
-          <p>No active trip assigned right now.</p>
-        ) : !trip ? (
-          <p>Loading trip...</p>
-        ) : (
-          <>
-            <div style={{ marginTop: 12, marginBottom: 14 }}>
-              <RoutePreviewMap
-                pickup={trip.pickup_geo}
-                dropoff={trip.dropoff_geo}
-                route_polyline={trip.route_polyline}
-                height={360}
-              />
-            </div>
-
-            <p>
-              <b>Trip ID:</b> {trip._id}
-            </p>
-            <p>
-              <b>Status:</b> {trip.status}
-            </p>
-            <p>
-              <b>Fare:</b> {trip.fare_amount} {trip.currency}
-            </p>
-
-            <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
-              {trip.status === "ASSIGNED" && (
-                <button
-                  disabled={tripLoading}
-                  onClick={() => dispatch(arriveTrip(tripId))}
-                >
-                  Arrive
-                </button>
-              )}
-
-              {trip.status === "ENROUTE" && (
-                <button
-                  disabled={tripLoading}
-                  onClick={() => dispatch(startTrip(tripId))}
-                >
-                  Start
-                </button>
-              )}
-
-              {trip.status === "DRIVING" && (
-                <button
-                  disabled={tripLoading}
-                  onClick={() => dispatch(completeTrip(tripId))}
-                >
-                  Complete
-                </button>
-              )}
-            </div>
-          </>
+          </div>
         )}
+
+        {/* Offline empty state */}
+        {!activeTripId && !isAvailable && driverProfile && isVerified && (
+          <div style={{ background: colors.bgBase, border: `1px solid ${colors.border}`, borderRadius: 16, marginBottom: 16, textAlign: "center", padding: "48px 20px" }}>
+            <div style={{ fontSize: 40, marginBottom: 12 }}>😴</div>
+            <p style={{ margin: "0 0 6px", fontSize: 16, fontWeight: 700 }}>You're offline</p>
+            <p style={{ margin: 0, fontSize: 13, color: colors.textMuted }}>Use the toggle above to go online and start accepting trips.</p>
+          </div>
+        )}
+
+        {activeTripId && <ActiveTripCard />}
+
+        {canShowMarketplace && <TripMarketplace />}
+
       </div>
     </div>
   );
