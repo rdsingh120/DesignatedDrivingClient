@@ -100,6 +100,28 @@ export default function RiderTripPage() {
                     </span>
                   )}
                 </div>
+                {(trip.status === "ASSIGNED" || trip.status === "ENROUTE") && (
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    padding: "12px 16px",
+                    borderBottom: `1px solid ${colors.borderSubtle}`,
+                  }}
+                >
+                  <span style={{ fontSize: 13, color: colors.textMuted }}>Driver ETA</span>
+
+                  {trip.driver_eta_minutes ? (
+                    <span style={{ fontSize: 14, color: colors.textPrimary }}>
+                      {Math.round(trip.driver_eta_minutes)} minutes
+                    </span>
+                  ) : (
+                    <span style={{ fontSize: 13, color: colors.textMuted }}>
+                      Calculating...
+                    </span>
+                  )}
+                </div>
+                  )}
                 <div style={{ display: "flex", justifyContent: "space-between", padding: "12px 16px" }}>
                   <span style={{ fontSize: 13, color: colors.textMuted }}>Vehicle</span>
                   <span style={{ fontSize: 14, color: colors.textPrimary }}>
