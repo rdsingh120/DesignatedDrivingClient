@@ -22,3 +22,4 @@ export const apiAcceptTrip = (id) => http.post(API.TRIPS.ACCEPT(id));
 export const apiArriveTrip = (id) => http.post(API.TRIPS.ARRIVE(id));
 export const apiStartTrip = (id) => http.post(API.TRIPS.START(id));
 export const apiCompleteTrip = (id) => http.post(API.TRIPS.COMPLETE(id));
+export const apiCancelTrip = (id) => http.post(API.TRIPS.CANCEL(id));

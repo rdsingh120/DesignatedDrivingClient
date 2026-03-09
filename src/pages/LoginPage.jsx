@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
 import { login, selectAuth, clearAuthError } from "../features/auth/authSlice";
 import { getErrorMessage } from "../utils/errors";
+import { colors, gradients, inputStyle, btn, errorBanner } from "../styles/theme";
 
 export default function LoginPage() {
   const dispatch = useAppDispatch();
@@ -13,7 +14,7 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const from = location.state?.from || "/";
+  const from = location.state?.from;
 
   async function onSubmit(e) {
     e.preventDefault();
@@ -21,47 +22,73 @@ export default function LoginPage() {
 
     const result = await dispatch(login({ email, password }));
     if (login.fulfilled.match(result)) {
-      navigate(from, { replace: true });
+      const role = (result.payload?.user?.role || "").toUpperCase();
+      const dest = from && from !== "/" ? from : role === "DRIVER" ? "/driver" : "/rider";
+      navigate(dest, { replace: true });
     }
   }
 
   return (
-    <div style={{ maxWidth: 420, margin: "40px auto" }}>
-      <h2>Login</h2>
+    <div style={{ minHeight: "100vh", background: gradients.page, color: colors.textPrimary, fontFamily: "system-ui, sans-serif", display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <div style={{ width: "100%", maxWidth: 420, padding: "0 24px" }}>
 
-      {auth.error ? (
-        <div style={{ background: "#fee", padding: 10, marginBottom: 10 }}>
-          {getErrorMessage(auth.error, "Login failed")}
+        {/* Logo / title */}
+        <div style={{ textAlign: "center", marginBottom: 32 }}>
+          <div style={{ width: 52, height: 52, borderRadius: 14, background: gradients.primary, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 26, margin: "0 auto 16px" }}>
+            🚘
+          </div>
+          <h1 style={{ margin: "0 0 6px", fontSize: 24, fontWeight: 700 }}>Designated Driving</h1>
+          <p style={{ margin: 0, fontSize: 14, color: colors.textMuted }}>Sign in to your account</p>
         </div>
-      ) : null}
 
-      <form onSubmit={onSubmit}>
-        <label>Email</label>
-        <input
-          style={{ width: "100%", padding: 8, margin: "6px 0 12px" }}
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          type="email"
-          required
-        />
+        {/* Error */}
+        {auth.error && (
+          <div style={{ ...errorBanner, marginBottom: 16 }}>
+            {getErrorMessage(auth.error, "Login failed")}
+          </div>
+        )}
 
-        <label>Password</label>
-        <input
-          style={{ width: "100%", padding: 8, margin: "6px 0 12px" }}
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          type="password"
-          required
-        />
+        <form onSubmit={onSubmit} style={{ display: "grid", gap: 14 }}>
+          <div>
+            <label style={{ display: "block", fontSize: 13, color: colors.textMuted, marginBottom: 6 }}>Email</label>
+            <input
+              style={inputStyle}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              type="email"
+              placeholder="you@example.com"
+              required
+            />
+          </div>
 
-        <button disabled={auth.status === "loading"} style={{ padding: 10, width: "100%" }}>
-          {auth.status === "loading" ? "Logging in..." : "Login"}
-        </button>
-      </form>
+          <div>
+            <label style={{ display: "block", fontSize: 13, color: colors.textMuted, marginBottom: 6 }}>Password</label>
+            <input
+              style={inputStyle}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              type="password"
+              placeholder="••••••••"
+              required
+            />
+          </div>
 
-      <p style={{ marginTop: 12 }}>
-        No account? <Link to="/register">Register</Link>
-      </p>
+          <button
+            disabled={auth.status === "loading"}
+            style={{ ...btn.primary, width: "100%", padding: "12px 0", fontSize: 15, opacity: auth.status === "loading" ? 0.6 : 1 }}
+          >
+            {auth.status === "loading" ? "Signing in…" : "Sign in"}
+          </button>
+        </form>
+
+        <p style={{ marginTop: 20, textAlign: "center", fontSize: 14, color: colors.textMuted }}>
+          No account?{" "}
+          <Link to="/register" style={{ color: colors.primaryFaint, fontWeight: 600, textDecoration: "none" }}>
+            Register
+          </Link>
+        </p>
+
+      </div>
     </div>
   );
 }

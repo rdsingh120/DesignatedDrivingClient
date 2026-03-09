@@ -1,5 +1,5 @@
-import React, { useMemo } from "react";
-import { MapContainer, TileLayer, Marker, Polyline } from "react-leaflet";
+import React, { useMemo, useEffect } from "react";
+import { MapContainer, TileLayer, Marker, Polyline, useMap } from "react-leaflet";
 import polyline from "@mapbox/polyline";
 
 function toLeafletLatLng(value) {
@@ -59,6 +59,16 @@ function computeBounds(points) {
   ];
 }
 
+function FitBounds({ bounds }) {
+  const map = useMap();
+  useEffect(() => {
+    if (bounds) {
+      map.fitBounds(bounds, { padding: [40, 40] });
+    }
+  }, [map, bounds]);
+  return null;
+}
+
 export default function RoutePreviewMap({
   pickup,
   dropoff,
@@ -99,15 +109,13 @@ export default function RoutePreviewMap({
         center={center}
         zoom={defaultZoom}
         style={{ width: "100%", height: "100%" }}
-        bounds={bounds || undefined}
-        boundsOptions={{ padding: [30, 30] }}
         scrollWheelZoom
       >
         <TileLayer
           attribution="&copy; OpenStreetMap contributors"
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-
+        {bounds && <FitBounds bounds={bounds} />}
         {pickupLL && <Marker position={pickupLL} />}
         {dropoffLL && <Marker position={dropoffLL} />}
         {routePoints.length > 0 && <Polyline positions={routePoints} />}
