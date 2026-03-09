@@ -2,6 +2,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useAppSelector } from "../../app/hooks";
 import { useTripPolling } from "../../hooks/useTripPolling";
 import { colors, pageStyle, cardStyle } from "../../styles/theme";
+import { useEffect, useState } from "react";
 
 import RoutePreviewMap from "../../features/estimates/components/RoutePreviewMap";
 import StatusBadge from "./components/StatusBadge";
@@ -10,6 +11,7 @@ import StatusTracker from "./components/StatusTracker";
 export default function RiderTripPage() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [redirected, setRedirected] = useState(false);
 
   useTripPolling(id, {
     enabled: true,
@@ -18,6 +20,12 @@ export default function RiderTripPage() {
   });
 
   const trip = useAppSelector((s) => s.trips.current);
+  useEffect(() => {
+  if (trip && trip.status === "COMPLETED" && !redirected) {
+    setRedirected(true);
+    navigate(`/rider/rate/${id}`);
+  }
+  }, [trip, redirected, navigate, id]);
 
   const driverName = trip?.driverProfile?.user?.name;
 
