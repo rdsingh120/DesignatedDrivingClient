@@ -3,9 +3,14 @@ import { useEffect, useRef } from "react";
 import { useAppDispatch } from "../app/hooks";
 import { fetchTripById } from "../features/trips/tripsSlice";
 
-export function useTripPolling(tripId, stopWhenStatus = "COMPLETED", intervalMs = 2500) {
+const TERMINAL_STATUSES = ["COMPLETED", "CANCELLED"];
+
+export function useTripPolling(tripId, stopWhenStatus = TERMINAL_STATUSES, intervalMs = 2500) {
   const dispatch = useAppDispatch();
   const timerRef = useRef(null);
+
+  // Normalize to array so callers can pass a string or array
+  const stopStatuses = Array.isArray(stopWhenStatus) ? stopWhenStatus : [stopWhenStatus];
 
   useEffect(() => {
     if (!tripId) return;
@@ -18,7 +23,7 @@ export function useTripPolling(tripId, stopWhenStatus = "COMPLETED", intervalMs 
       const action = await dispatch(fetchTripById(tripId));
       const trip = action?.payload;
 
-      if (trip?.status === stopWhenStatus) {
+      if (trip?.status && stopStatuses.includes(trip.status)) {
         if (timerRef.current) clearInterval(timerRef.current);
         timerRef.current = null;
       }
@@ -32,5 +37,5 @@ export function useTripPolling(tripId, stopWhenStatus = "COMPLETED", intervalMs 
       if (timerRef.current) clearInterval(timerRef.current);
       timerRef.current = null;
     };
-  }, [dispatch, tripId, stopWhenStatus, intervalMs]);
+  }, [dispatch, tripId, stopStatuses.join(","), intervalMs]);
 }
