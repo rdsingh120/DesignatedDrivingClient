@@ -1,7 +1,9 @@
+import { useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { useAppSelector } from "../../app/hooks";
+import { useAppSelector, useAppDispatch } from "../../app/hooks";
 import { useTripPolling } from "../../hooks/useTripPolling";
-import { colors, alpha, cardStyle, pageStyle, btn } from "../../styles/theme";
+import { cancelTrip } from "../../features/trips/tripsSlice";
+import { colors, alpha, cardStyle, pageStyle, btn, modalOverlay, modalCard } from "../../styles/theme";
 
 import RoutePreviewMap from "../../features/estimates/components/RoutePreviewMap";
 import StatusBadge from "./components/StatusBadge";
@@ -15,6 +17,8 @@ function formatTime(dateStr) {
 export default function RiderTripPage() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const [showCancelModal, setShowCancelModal] = useState(false);
 
   useTripPolling(id);
 
@@ -24,6 +28,8 @@ export default function RiderTripPage() {
 
   const driverName = trip?.driverProfile?.user?.name;
   const isTerminal = trip?.status === "COMPLETED" || trip?.status === "CANCELLED";
+  const canCancel = trip?.status === "REQUESTED" || trip?.status === "ASSIGNED";
+  const hasFee = trip?.status === "ASSIGNED";
 
   return (
     <div style={pageStyle}>
@@ -69,6 +75,29 @@ export default function RiderTripPage() {
           <>
             {/* Real-time status tracker */}
             <StatusTracker status={trip.status} />
+
+            {/* Cancel button */}
+            {canCancel && (
+              <div style={{ marginBottom: 16, textAlign: "center" }}>
+                <button
+                  disabled={tripLoading}
+                  onClick={() => setShowCancelModal(true)}
+                  style={{
+                    background: "transparent",
+                    border: `1px solid ${colors.dangerDeep}`,
+                    color: colors.dangerLight,
+                    borderRadius: 8,
+                    padding: "10px 24px",
+                    cursor: "pointer",
+                    fontWeight: 600,
+                    fontSize: 14,
+                    opacity: tripLoading ? 0.6 : 1,
+                  }}
+                >
+                  Cancel Request
+                </button>
+              </div>
+            )}
 
             {/* Completion actions */}
             {trip.status === "COMPLETED" && (
@@ -229,6 +258,46 @@ export default function RiderTripPage() {
         )}
 
       </div>
+
+      {/* Cancel confirmation modal */}
+      {showCancelModal && (
+        <div style={modalOverlay}>
+          <div style={modalCard}>
+            <h3 style={{ margin: "0 0 8px", fontSize: 18, fontWeight: 700, color: colors.textPrimary }}>
+              Cancel your request?
+            </h3>
+            <p style={{ margin: "0 0 24px", fontSize: 14, color: colors.textMuted, lineHeight: 1.5 }}>
+              {hasFee
+                ? "A cancellation fee will apply because a driver has already been assigned to your trip."
+                : "Your request will be removed and no driver will be matched."}
+            </p>
+            <div style={{ display: "flex", gap: 10 }}>
+              <button
+                onClick={() => setShowCancelModal(false)}
+                style={{
+                  flex: 1, padding: "10px 0", background: "transparent",
+                  border: `1px solid ${colors.border}`, borderRadius: 8,
+                  color: colors.textSecondary, cursor: "pointer", fontWeight: 600, fontSize: 14,
+                }}
+              >
+                Keep Request
+              </button>
+              <button
+                disabled={tripLoading}
+                onClick={() => { dispatch(cancelTrip(id)); setShowCancelModal(false); }}
+                style={{
+                  flex: 1, padding: "10px 0", background: colors.dangerDark,
+                  border: "none", borderRadius: 8, color: "#fff",
+                  cursor: "pointer", fontWeight: 600, fontSize: 14,
+                  opacity: tripLoading ? 0.6 : 1,
+                }}
+              >
+                {hasFee ? "Cancel & Accept Fee" : "Yes, Cancel"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
