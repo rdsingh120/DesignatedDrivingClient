@@ -15,6 +15,7 @@ import RiderVehiclesPage from "./pages/Rider/RiderVehiclesPage";
 import RiderRequestPage from "./pages/Rider/RiderRequestPage";
 import RiderTripPage from "./pages/Rider/RiderTripPage";
 import RiderTripHistoryPage from "./pages/Rider/RiderTripHistoryPage";
+import RiderProfilePage from "./pages/Rider/RiderProfilePage";
 
 function RoleRedirect() {
   const role = useAppSelector(selectRole);
@@ -27,7 +28,6 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-
         {/* Public */}
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
@@ -43,6 +43,14 @@ export default function App() {
             <Route path="/rider/request" element={<RiderRequestPage />} />
             <Route path="/rider/trip/:id" element={<RiderTripPage />} />
             <Route path="/rider/history" element={<RiderTripHistoryPage />} />
+            <Route element={<RoleRoute allow={["RIDER"]} />}>
+              <Route path="/rider" element={<RiderDashboardPage />} />
+              <Route path="/rider/vehicles" element={<RiderVehiclesPage />} />
+              <Route path="/rider/request" element={<RiderRequestPage />} />
+              <Route path="/rider/trip/:id" element={<RiderTripPage />} />
+              <Route path="/rider/history" element={<RiderTripHistoryPage />} />
+              <Route path="/rider/profile" element={<RiderProfilePage />} />
+            </Route>
           </Route>
 
           {/* Driver (protected + role-gated) */}
