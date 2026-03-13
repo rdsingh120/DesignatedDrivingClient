@@ -2,8 +2,8 @@ import { useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useAppSelector, useAppDispatch } from "../../app/hooks";
 import { useTripPolling } from "../../hooks/useTripPolling";
-import { cancelTrip } from "../../features/trips/tripsSlice";
-import { colors, alpha, cardStyle, pageStyle, btn, modalOverlay, modalCard } from "../../styles/theme";
+import { colors, pageStyle, cardStyle } from "../../styles/theme";
+import { useEffect, useState } from "react";
 
 import RoutePreviewMap from "../../features/estimates/components/RoutePreviewMap";
 import StatusBadge from "./components/StatusBadge";
@@ -17,14 +17,17 @@ function formatTime(dateStr) {
 export default function RiderTripPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const dispatch = useAppDispatch();
-  const [showCancelModal, setShowCancelModal] = useState(false);
+  const [redirected, setRedirected] = useState(false);
 
   useTripPolling(id);
 
   const trip = useAppSelector((s) => s.trips.current);
-  const tripLoading = useAppSelector((s) => s.trips.loading);
-  const tripError = useAppSelector((s) => s.trips.error);
+  useEffect(() => {
+  if (trip && trip.status === "COMPLETED" && !redirected) {
+    setRedirected(true);
+    navigate(`/rider/rate/${id}`);
+  }
+  }, [trip, redirected, navigate, id]);
 
   const driverName = trip?.driverProfile?.user?.name;
   const isTerminal = trip?.status === "COMPLETED" || trip?.status === "CANCELLED";
