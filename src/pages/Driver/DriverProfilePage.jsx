@@ -13,10 +13,6 @@ export default function DriverProfilePage() {
     licenseNumber: "",
     licenseExpiry: "",
     dateOfBirth: "",
-    vehicleMake: "",
-    vehicleModel: "",
-    vehicleYear: "",
-    plateNumber: "",
     street: "",
     city: "",
   });
@@ -34,10 +30,6 @@ export default function DriverProfilePage() {
           licenseNumber: p.licenseNumber || "",
           licenseExpiry: p.licenseExpiry?.slice?.(0, 10) || "",
           dateOfBirth: p.dateOfBirth?.slice?.(0, 10) || "",
-          vehicleMake: p.vehicle?.make || "",
-          vehicleModel: p.vehicle?.model || "",
-          vehicleYear: p.vehicle?.year || "",
-          plateNumber: p.vehicle?.plateNumber || "",
           street: p.address?.street || "",
           city: p.address?.city || "",
         });
@@ -67,20 +59,11 @@ export default function DriverProfilePage() {
         licenseExpiry: form.licenseExpiry,
         dateOfBirth: form.dateOfBirth,
 
-        vehicle: {
-          make: form.vehicleMake,
-          model: form.vehicleModel,
-          year: Number(form.vehicleYear),
-          plateNumber: form.plateNumber,
-        },
-
         address: {
           street: form.street,
           city: form.city,
         },
       });
-
-      alert("Driver profile submitted for verification");
 
       navigate("/driver", { replace: true });
     } catch (err) {
@@ -169,41 +152,6 @@ export default function DriverProfilePage() {
                 onChange={onChange}
               />
             </div>
-
-            {/* Vehicle */}
-            <h4 style={{ marginTop: 8 }}>Vehicle</h4>
-
-            <input
-              style={inputStyle}
-              name="vehicleMake"
-              placeholder="Make"
-              value={form.vehicleMake}
-              onChange={onChange}
-            />
-
-            <input
-              style={inputStyle}
-              name="vehicleModel"
-              placeholder="Model"
-              value={form.vehicleModel}
-              onChange={onChange}
-            />
-
-            <input
-              style={inputStyle}
-              name="vehicleYear"
-              placeholder="Year"
-              value={form.vehicleYear}
-              onChange={onChange}
-            />
-
-            <input
-              style={inputStyle}
-              name="plateNumber"
-              placeholder="Plate number"
-              value={form.plateNumber}
-              onChange={onChange}
-            />
 
             {/* Address */}
             <h4 style={{ marginTop: 8 }}>Address</h4>
