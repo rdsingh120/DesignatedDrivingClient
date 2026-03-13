@@ -4,7 +4,9 @@ import ProtectedRoute from "./routes/ProtectedRoute";
 import RoleRoute from "./routes/RoleRoute";
 import DriverDashboardPage from "./pages/Driver/DriverDashboardPage";
 import DriverProfilePage from "./pages/Driver/DriverProfilePage";
+import DriverTripDetailPage from "./pages/Driver/DriverTripDetailPage";
 
+import AdminDashboardPage from "./pages/Admin/AdminDashboardPage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 
@@ -24,6 +26,7 @@ function RoleRedirect() {
   const role = useAppSelector(selectRole);
   if (role === "RIDER") return <Navigate to="/rider" replace />;
   if (role === "DRIVER") return <Navigate to="/driver" replace />;
+  if (role === "ADMIN") return <Navigate to="/admin" replace />;
   return <Navigate to="/login" replace />;
 }
 
@@ -69,8 +72,13 @@ export default function App() {
           <Route element={<RoleRoute allow={["DRIVER"]} />}>
             <Route path="/driver" element={<DriverDashboardPage />} />
             <Route path="/driver/profile" element={<DriverProfilePage />} />
+            <Route path="/driver/trip/:id" element={<DriverTripDetailPage />} />
           </Route>
         </Route>
+
+        <Route element={<RoleRoute allow={["ADMIN"]} />}>
+  <Route path="/admin" element={<AdminDashboardPage />} />
+</Route>
       </Routes>
     </BrowserRouter>
   );
