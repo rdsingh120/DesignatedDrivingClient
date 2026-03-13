@@ -1,9 +1,11 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import RoleRoute from "./routes/RoleRoute";
+
 import DriverDashboardPage from "./pages/Driver/DriverDashboardPage";
-import RateTripPage from "./pages/RateTripPage";
+import DriverProfilePage from "./pages/Driver/DriverProfilePage";
+
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 
@@ -16,6 +18,8 @@ import RiderRequestPage from "./pages/Rider/RiderRequestPage";
 import RiderTripPage from "./pages/Rider/RiderTripPage";
 import RiderTripHistoryPage from "./pages/Rider/RiderTripHistoryPage";
 import RiderProfilePage from "./pages/Rider/RiderProfilePage";
+import { waitForAPI } from "./utils/apiWakeCheck";
+import APILoadingScreen from "./components/APILoadingScreen";
 
 
 function RoleRedirect() {
@@ -26,6 +30,15 @@ function RoleRedirect() {
 }
 
 export default function App() {
+  const [apiReady, setApiReady] = useState(false);
+
+  useEffect(() => {
+    waitForAPI().then(() => setApiReady(true));
+  }, []);
+
+  if (!apiReady) {
+    return <APILoadingScreen />;
+  }
   return (
     <BrowserRouter>
       <Routes>
@@ -51,6 +64,7 @@ export default function App() {
           {/* Driver (protected + role-gated) */}
           <Route element={<RoleRoute allow={["DRIVER"]} />}>
             <Route path="/driver" element={<DriverDashboardPage />} />
+            <Route path="/driver/profile" element={<DriverProfilePage />} />
           </Route>
         </Route>
       </Routes>
