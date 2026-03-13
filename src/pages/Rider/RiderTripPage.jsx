@@ -165,6 +165,22 @@ export default function RiderTripPage() {
               </span>
             </div>
 
+            {/* Display assigned driver name and phone number so rider can contact driver */}
+{trip?.driverProfile && (
+  <div style={cardStyle}>
+    <span style={{ fontSize: 13, color: colors.textMuted }}>Assigned Driver</span>
+
+    <div style={{ marginTop: 8, display: "flex", flexDirection: "column", gap: 6 }}>
+      <span style={{ fontSize: 14, color: colors.textPrimary }}>
+        <strong>Name:</strong> {trip?.driverProfile?.user?.name || "Not available"}
+      </span>
+
+      <span style={{ fontSize: 14, color: colors.textPrimary }}>
+        <strong>Phone:</strong> {trip?.driverProfile?.phoneNumber || "Not available"}
+      </span>
+    </div>
+  </div>
+)}
             {(trip.status === "ASSIGNED" || trip.status === "ENROUTE") && (
               <div style={cardStyle}>
                 <span style={{ fontSize: 13, color: colors.textMuted }}>Driver ETA</span>
