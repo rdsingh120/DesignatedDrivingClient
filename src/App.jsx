@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import RoleRoute from "./routes/RoleRoute";
+
 import DriverDashboardPage from "./pages/Driver/DriverDashboardPage";
 import DriverProfilePage from "./pages/Driver/DriverProfilePage";
 
@@ -19,6 +20,7 @@ import RiderTripHistoryPage from "./pages/Rider/RiderTripHistoryPage";
 import RiderProfilePage from "./pages/Rider/RiderProfilePage";
 import { waitForAPI } from "./utils/apiWakeCheck";
 import APILoadingScreen from "./components/APILoadingScreen";
+
 
 function RoleRedirect() {
   const role = useAppSelector(selectRole);
@@ -55,16 +57,10 @@ export default function App() {
             <Route path="/rider/request" element={<RiderRequestPage />} />
             <Route path="/rider/trip/:id" element={<RiderTripPage />} />
             <Route path="/rider/history" element={<RiderTripHistoryPage />} />
-            <Route element={<RoleRoute allow={["RIDER"]} />}>
-              <Route path="/rider" element={<RiderDashboardPage />} />
-              <Route path="/rider/vehicles" element={<RiderVehiclesPage />} />
-              <Route path="/rider/request" element={<RiderRequestPage />} />
-              <Route path="/rider/trip/:id" element={<RiderTripPage />} />
-              <Route path="/rider/history" element={<RiderTripHistoryPage />} />
-              <Route path="/rider/profile" element={<RiderProfilePage />} />
-            </Route>
+          {/* Rating page */}
+            <Route path="/rider/rate/:tripId" element={<RateTripPage />} />
           </Route>
-
+          
           {/* Driver (protected + role-gated) */}
           <Route element={<RoleRoute allow={["DRIVER"]} />}>
             <Route path="/driver" element={<DriverDashboardPage />} />
