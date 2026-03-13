@@ -15,6 +15,7 @@ import RiderVehiclesPage from "./pages/Rider/RiderVehiclesPage";
 import RiderRequestPage from "./pages/Rider/RiderRequestPage";
 import RiderTripPage from "./pages/Rider/RiderTripPage";
 import RiderTripHistoryPage from "./pages/Rider/RiderTripHistoryPage";
+import RiderProfilePage from "./pages/Rider/RiderProfilePage";
 
 
 function RoleRedirect() {
@@ -28,7 +29,6 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-
         {/* Public */}
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />

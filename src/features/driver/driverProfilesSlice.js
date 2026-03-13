@@ -6,6 +6,7 @@ import {
   apiCreateMyDriverProfile as createMe,
 } from "../../api/driverClient";
 import { acceptTrip, cancelTrip, completeTrip } from "../trips/tripsSlice";
+import { logout } from "../auth/authSlice";
 
 export const getMyDriverProfile = createAsyncThunk(
   "driverProfiles/getMe",
@@ -113,6 +114,12 @@ const driverProfilesSlice = createSlice({
         s.me.activeTrip = null;
         s.me.availability = "AVAILABLE";
       }
+    });
+
+    b.addCase(logout, (s) => {
+      s.me = null;
+      s.loading = false;
+      s.error = null;
     });
   },
 });

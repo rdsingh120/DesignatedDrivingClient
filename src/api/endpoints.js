@@ -17,9 +17,9 @@ export const API = {
   TRIPS: {
     CREATE_FROM_ESTIMATE: "/api/trips",
     MINE: "/api/trips/mine",
-    OPEN: "/api/trips/open",          
+    OPEN: "/api/trips/open",
     BY_ID: (id) => `/api/trips/${id}`,
-    ACCEPT: (id) => `/api/trips/${id}/accept`, 
+    ACCEPT: (id) => `/api/trips/${id}/accept`,
     ARRIVE: (id) => `/api/trips/${id}/arrive`,
     START: (id) => `/api/trips/${id}/start`,
     COMPLETE: (id) => `/api/trips/${id}/complete`,
@@ -29,5 +29,10 @@ export const API = {
   DRIVER_PROFILES: {
     ME: "/api/driver-profiles/me",
     UPDATE_STATUS: "/api/driver-profiles/me/status",
+  },
+
+  USERS: {
+    ME: "/api/users/me",
+    UPDATE: "/api/users/me",
   },
 };
