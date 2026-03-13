@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import RoleRoute from "./routes/RoleRoute";
 import DriverDashboardPage from "./pages/Driver/DriverDashboardPage";
+import DriverProfilePage from "./pages/Driver/DriverProfilePage";
 
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
@@ -56,6 +57,7 @@ export default function App() {
           {/* Driver (protected + role-gated) */}
           <Route element={<RoleRoute allow={["DRIVER"]} />}>
             <Route path="/driver" element={<DriverDashboardPage />} />
+            <Route path="/driver/profile" element={<DriverProfilePage />} />
           </Route>
         </Route>
       </Routes>
