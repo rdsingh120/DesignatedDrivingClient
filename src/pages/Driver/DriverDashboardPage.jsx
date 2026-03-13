@@ -3,7 +3,10 @@ import { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { useTripPolling } from "../../hooks/useTripPolling";
 import { logout, selectUser } from "../../features/auth/authSlice";
-import { getMyDriverProfile, updateMyDriverStatus } from "../../features/driver/driverProfilesSlice";
+import {
+  getMyDriverProfile,
+  updateMyDriverStatus,
+} from "../../features/driver/driverProfilesSlice";
 import { fetchTripById, fetchOpenTrips } from "../../features/trips/tripsSlice";
 import { colors, alpha, gradients } from "../../styles/theme";
 
@@ -98,6 +101,7 @@ export default function DriverDashboardPage() {
             </div>
           </div>
         </div>
+
         <button
           onClick={handleSignOut}
           style={{
@@ -118,75 +122,77 @@ export default function DriverDashboardPage() {
       <div style={{ maxWidth: 1100, margin: "0 auto", padding: "28px 24px 0" }}>
         <DriverStatusCard />
 
-        {/* Quick actions */}
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-            gap: 16,
-            marginBottom: 20,
-          }}
-        >
-          <a href="/driver/profile" style={{ textDecoration: "none" }}>
-            <div
-              style={{
-                background: colors.bgBase,
-                border: `1px solid ${colors.border}`,
-                borderRadius: 16,
-                padding: 24,
-                cursor: "pointer",
-                transition: "transform 0.15s, border-color 0.15s, box-shadow 0.15s",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = "translateY(-2px)";
-                e.currentTarget.style.borderColor = colors.primary;
-                e.currentTarget.style.boxShadow = "0 8px 24px rgba(0,0,0,0.3)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = "translateY(0)";
-                e.currentTarget.style.borderColor = colors.border;
-                e.currentTarget.style.boxShadow = "none";
-              }}
-            >
+        {/* Quick actions (only if profile complete) */}
+        {driverProfile?.licenseNumber && (
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+              gap: 16,
+              marginBottom: 20,
+            }}
+          >
+            <a href="/driver/profile" style={{ textDecoration: "none" }}>
               <div
                 style={{
-                  width: 44,
-                  height: 44,
-                  borderRadius: 12,
-                  background: alpha.primary15,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  marginBottom: 16,
-                  fontSize: 20,
+                  background: colors.bgBase,
+                  border: `1px solid ${colors.border}`,
+                  borderRadius: 16,
+                  padding: 24,
+                  cursor: "pointer",
+                  transition: "transform 0.15s, border-color 0.15s, box-shadow 0.15s",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = "translateY(-2px)";
+                  e.currentTarget.style.borderColor = colors.primary;
+                  e.currentTarget.style.boxShadow = "0 8px 24px rgba(0,0,0,0.3)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = "translateY(0)";
+                  e.currentTarget.style.borderColor = colors.border;
+                  e.currentTarget.style.boxShadow = "none";
                 }}
               >
-                👤
+                <div
+                  style={{
+                    width: 44,
+                    height: 44,
+                    borderRadius: 12,
+                    background: alpha.primary15,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    marginBottom: 16,
+                    fontSize: 20,
+                  }}
+                >
+                  👤
+                </div>
+
+                <h2
+                  style={{
+                    margin: "0 0 6px",
+                    fontSize: 18,
+                    fontWeight: 700,
+                    color: colors.textPrimary,
+                  }}
+                >
+                  Update Profile
+                </h2>
+
+                <p
+                  style={{
+                    margin: 0,
+                    fontSize: 13,
+                    color: colors.textMuted,
+                  }}
+                >
+                  Update your driver information and documents
+                </p>
               </div>
-
-              <h2
-                style={{
-                  margin: "0 0 6px",
-                  fontSize: 18,
-                  fontWeight: 700,
-                  color: colors.textPrimary,
-                }}
-              >
-                Update Profile
-              </h2>
-
-              <p
-                style={{
-                  margin: 0,
-                  fontSize: 13,
-                  color: colors.textMuted,
-                }}
-              >
-                Update your driver information and documents
-              </p>
-            </div>
-          </a>
-        </div>
+            </a>
+          </div>
+        )}
 
         {/* Not verified warning */}
         {driverProfile && !isVerified && (
