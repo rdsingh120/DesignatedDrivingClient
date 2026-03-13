@@ -10,7 +10,7 @@ import DriverTripDetailPage from "./pages/Driver/DriverTripDetailPage";
 import AdminDashboardPage from "./pages/Admin/AdminDashboardPage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
-
+import RateTripPage from "./pages/RateTripPage";
 import { useAppSelector } from "./app/hooks";
 import { selectRole } from "./features/auth/authSlice";
 import RateTripPage from "./pages/RateTripPage";
