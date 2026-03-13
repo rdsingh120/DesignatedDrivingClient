@@ -84,15 +84,27 @@ export default function DriverDashboardPage() {
             style={{
               width: 36,
               height: 36,
-              borderRadius: 10,
+              borderRadius: "50%",
+              overflow: "hidden",
               background: gradients.primary,
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              fontSize: 18,
             }}
           >
-            🚘
+            {driverProfile?.profilePhoto ? (
+              <img
+                src={`${import.meta.env.VITE_API_BASE_URL}${driverProfile.profilePhoto}`}
+                alt="Driver"
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                }}
+              />
+            ) : (
+              <span style={{ fontSize: 18 }}>🚘</span>
+            )}
           </div>
           <div>
             <div style={{ fontWeight: 700, fontSize: 15 }}>Driver Dashboard</div>

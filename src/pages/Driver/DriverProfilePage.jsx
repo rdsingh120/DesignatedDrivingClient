@@ -2,7 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { apiGetMyDriverProfile, apiUpdateMyDriverProfile } from "../../api/driverClient";
+import {
+  apiGetMyDriverProfile,
+  apiUpdateMyDriverProfile,
+  apiUploadDriverPhoto,
+} from "../../api/driverClient";
+
 import { colors, pageStyle, cardStyle, inputStyle, btn } from "../../styles/theme";
 
 export default function DriverProfilePage() {
@@ -16,6 +21,9 @@ export default function DriverProfilePage() {
     street: "",
     city: "",
   });
+
+  const [photo, setPhoto] = useState(null);
+  const [photoPreview, setPhotoPreview] = useState(null);
 
   const [saving, setSaving] = useState(false);
 
@@ -33,6 +41,10 @@ export default function DriverProfilePage() {
           street: p.address?.street || "",
           city: p.address?.city || "",
         });
+
+        if (p.profilePhoto) {
+          setPhotoPreview(`${import.meta.env.VITE_API_BASE_URL}${p.profilePhoto}`);
+        }
       } catch (err) {
         console.error(err);
       }
@@ -48,17 +60,29 @@ export default function DriverProfilePage() {
     }));
   }
 
+  function onPhotoChange(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setPhoto(file);
+    setPhotoPreview(URL.createObjectURL(file));
+  }
+
   async function onSubmit(e) {
     e.preventDefault();
     setSaving(true);
 
     try {
+      // Upload photo if selected
+      if (photo) {
+        await apiUploadDriverPhoto(photo);
+      }
+
       await apiUpdateMyDriverProfile({
         phoneNumber: form.phoneNumber,
         licenseNumber: form.licenseNumber,
         licenseExpiry: form.licenseExpiry,
         dateOfBirth: form.dateOfBirth,
-
         address: {
           street: form.street,
           city: form.city,
@@ -67,7 +91,7 @@ export default function DriverProfilePage() {
 
       navigate("/driver", { replace: true });
     } catch (err) {
-      alert(err.message || "Update failed");
+      console.log(err.message || "Update failed");
     }
 
     setSaving(false);
@@ -94,13 +118,7 @@ export default function DriverProfilePage() {
 
         <h2 style={{ margin: 0, fontSize: 24, fontWeight: 700 }}>Driver Profile</h2>
 
-        <p
-          style={{
-            margin: "6px 0 0",
-            color: colors.textMuted,
-            fontSize: 14,
-          }}
-        >
+        <p style={{ margin: "6px 0 0", color: colors.textMuted, fontSize: 14 }}>
           Complete your driver profile before requesting verification.
         </p>
       </div>
@@ -108,6 +126,25 @@ export default function DriverProfilePage() {
       <div style={{ maxWidth: 600, margin: "0 auto", padding: "0 24px" }}>
         <div style={cardStyle}>
           <form onSubmit={onSubmit} style={{ display: "grid", gap: 12 }}>
+            {/* Profile Photo */}
+            <div style={{ textAlign: "center", marginBottom: 10 }}>
+              {photoPreview && (
+                <img
+                  src={photoPreview}
+                  alt="Driver"
+                  style={{
+                    width: 100,
+                    height: 100,
+                    borderRadius: "50%",
+                    objectFit: "cover",
+                    marginBottom: 10,
+                  }}
+                />
+              )}
+
+              <input type="file" accept="image/*" onChange={onPhotoChange} />
+            </div>
+
             {/* Phone */}
             <div>
               <label style={{ fontSize: 13, color: colors.textMuted }}>Phone Number</label>
