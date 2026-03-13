@@ -41,6 +41,31 @@ export default function DriverDashboardPage() {
     }
   }, [dispatch, isAvailable, activeTripId]);
 
+  //
+  useEffect(() => {
+  if (!navigator.geolocation || !driverProfile) return;
+
+  const watchId = navigator.geolocation.watchPosition(
+    (pos) => {
+      const lat = pos.coords.latitude;
+      const lng = pos.coords.longitude;
+
+      updateDriverLocation(lat, lng).catch(console.error);
+    },
+    (err) => {
+      console.error("GPS error:", err);
+    },
+    {
+      enableHighAccuracy: true,
+      maximumAge: 5000,
+      timeout: 10000,
+    }
+  );
+
+  return () => navigator.geolocation.clearWatch(watchId);
+}, [driverProfile]);
+  //
+
   const canShowMarketplace = !activeTripId && isAvailable && isVerified;
 
   async function handleSignOut() {
