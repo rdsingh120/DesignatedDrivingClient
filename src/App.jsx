@@ -13,7 +13,7 @@ import RegisterPage from "./pages/RegisterPage";
 import RateTripPage from "./pages/RateTripPage";
 import { useAppSelector } from "./app/hooks";
 import { selectRole } from "./features/auth/authSlice";
-import RateTripPage from "./pages/RateTripPage";
+
 
 import RiderDashboardPage from "./pages/Rider/RiderDashboardPage";
 import RiderVehiclesPage from "./pages/Rider/RiderVehiclesPage";

@@ -164,26 +164,121 @@ export default function RiderTripPage() {
                 {trip.fare_amount} {trip.currency}
               </span>
             </div>
+            {/* Route */}
+            <div style={cardStyle}>
+              <p style={{ margin: "0 0 12px", fontWeight: 600, fontSize: 13 }}>
+                Route
+              </p>
 
-            {(trip.status === "ASSIGNED" || trip.status === "ENROUTE") && (
-              <div style={cardStyle}>
-                <span style={{ fontSize: 13, color: colors.textMuted }}>Driver ETA</span>
+              <div style={{ background: colors.bgDeep, borderRadius: 10, overflow: "hidden" }}>
+                <div style={{ padding: "12px 16px", borderBottom: `1px solid ${colors.borderSubtle}` }}>
+                  <p style={{ margin: "0 0 4px", fontSize: 12, color: colors.textMuted }}>Pickup</p>
+                  <p style={{ margin: 0 }}>
+                    {trip.pickup_display_address || trip.pickup_address}
+                  </p>
+                </div>
 
-                {trip.driver_eta_minutes ? (
-                  <span style={{ fontSize: 14, color: colors.textPrimary }}>
-                    {Math.round(trip.driver_eta_minutes)} minutes
-                  </span>
-                ) : (
-                  <span style={{ fontSize: 13, color: colors.textMuted }}>
-                    Calculating...
-                  </span>
-                )}
+                <div style={{ padding: "12px 16px" }}>
+                  <p style={{ margin: "0 0 4px", fontSize: 12, color: colors.textMuted }}>Dropoff</p>
+                  <p style={{ margin: 0 }}>
+                    {trip.dropoff_display_address || trip.dropoff_address}
+                  </p>
+                </div>
               </div>
-            )}
+            </div> 
+            {/* Details */}
+            <div style={cardStyle}>
+              <p style={{ margin: "0 0 12px", fontWeight: 600, fontSize: 13 }}>
+                Details
+              </p>
+
+              <div style={{ background: colors.bgDeep, borderRadius: 10 }}>
+
+                <div style={{ display: "flex", justifyContent: "space-between", padding: "12px 16px" }}>
+                  <span>Rider</span>
+                  <span>{trip.rider?.name || trip.rider?._id}</span>
+                </div>
+
+                <div style={{ display: "flex", justifyContent: "space-between", padding: "12px 16px" }}>
+                  <span>Driver</span>
+
+                  {driverName ? (
+                    <span>{driverName}</span>
+                  ) : (
+                    <span style={{ color: colors.infoLight }}>
+                      Waiting for a driver...
+                    </span>
+                  )}
+                </div>
+
+                <div style={{ display: "flex", justifyContent: "space-between", padding: "12px 16px" }}>
+                  <span>Vehicle</span>
+                  <span>
+                    {trip.vehicle?.make} {trip.vehicle?.model} ({trip.vehicle?.plateNumber})
+                  </span>
+                </div>
+
+              </div>
+            </div>
+            {(trip.status === "ASSIGNED" || trip.status === "ENROUTE") && (
+            <div style={cardStyle}>
+              <span style={{ fontSize: 13, color: colors.textMuted }}>Driver ETA</span>
+
+              {trip.driver_eta_minutes ? (
+                <span style={{ marginLeft: 10 }}>
+                  {Math.round(trip.driver_eta_minutes)} minutes
+                </span>
+              ) : (
+                <span style={{ marginLeft: 10 }}>Calculating...</span>
+              )}
+            </div>
+                )}
           </>
         )}
 
       </div>
+      {/* Timeline */}
+      { trip && (trip.requestedAt || trip.createdAt || trip.startedAt || trip.completedAt || trip.cancelledAt) && (
+      
+        <div style={cardStyle}>
+
+          <p style={{ margin: "0 0 12px", fontWeight: 600, fontSize: 13 }}>
+            Timeline
+          </p>
+
+          <div style={{ background: colors.bgDeep, borderRadius: 10 }}>
+
+            {(trip.requestedAt || trip.createdAt) && (
+              <div style={{ display: "flex", justifyContent: "space-between", padding: "12px 16px" }}>
+                <span>Requested</span>
+                <span>{formatTime(trip.requestedAt || trip.createdAt)}</span>
+              </div>
+            )}
+
+            {trip.assignedAt && (
+              <div style={{ display: "flex", justifyContent: "space-between", padding: "12px 16px" }}>
+                <span>Driver Assigned</span>
+                <span>{formatTime(trip.assignedAt)}</span>
+              </div>
+            )}
+
+            {trip.startedAt && (
+              <div style={{ display: "flex", justifyContent: "space-between", padding: "12px 16px" }}>
+                <span>Trip Started</span>
+                <span>{formatTime(trip.startedAt)}</span>
+              </div>
+            )}
+
+            {trip.completedAt && (
+              <div style={{ display: "flex", justifyContent: "space-between", padding: "12px 16px" }}>
+                <span>Completed</span>
+                <span>{formatTime(trip.completedAt)}</span>
+              </div>
+            )}
+
+          </div>
+        </div>
+      )}
 
       {showCancelModal && (
         <div style={modalOverlay}>
