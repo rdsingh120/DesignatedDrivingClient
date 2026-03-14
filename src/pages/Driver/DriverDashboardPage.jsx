@@ -14,6 +14,7 @@ import DriverStatusCard from "./components/DriverStatusCard";
 import ActiveTripCard from "./components/ActiveTripCard";
 import TripMarketplace from "./components/TripMarketplace";
 import { Navigate } from "react-router-dom";
+import { updateDriverLocation } from "../../api/driverClient";
 
 export default function DriverDashboardPage() {
   const dispatch = useAppDispatch();
