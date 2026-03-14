@@ -61,10 +61,11 @@ export default function App() {
             <Route path="/rider/request" element={<RiderRequestPage />} />
             <Route path="/rider/trip/:id" element={<RiderTripPage />} />
             <Route path="/rider/history" element={<RiderTripHistoryPage />} />
-          {/* Rating page */}
+            <Route path="/rider/profile" element={<RiderProfilePage />} />
+            {/* Rating page */}
             <Route path="/rider/rate/:tripId" element={<RateTripPage />} />
           </Route>
-          
+
           {/* Driver (protected + role-gated) */}
           <Route element={<RoleRoute allow={["DRIVER"]} />}>
             <Route path="/driver" element={<DriverDashboardPage />} />
@@ -74,8 +75,8 @@ export default function App() {
         </Route>
 
         <Route element={<RoleRoute allow={["ADMIN"]} />}>
-  <Route path="/admin" element={<AdminDashboardPage />} />
-</Route>
+          <Route path="/admin" element={<AdminDashboardPage />} />
+        </Route>
       </Routes>
     </BrowserRouter>
   );
