@@ -10,10 +10,10 @@ import DriverTripDetailPage from "./pages/Driver/DriverTripDetailPage";
 import AdminDashboardPage from "./pages/Admin/AdminDashboardPage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
-
+import RateTripPage from "./pages/RateTripPage";
 import { useAppSelector } from "./app/hooks";
 import { selectRole } from "./features/auth/authSlice";
-import RateTripPage from "./pages/RateTripPage";
+
 
 import RiderDashboardPage from "./pages/Rider/RiderDashboardPage";
 import RiderVehiclesPage from "./pages/Rider/RiderVehiclesPage";
@@ -61,10 +61,11 @@ export default function App() {
             <Route path="/rider/request" element={<RiderRequestPage />} />
             <Route path="/rider/trip/:id" element={<RiderTripPage />} />
             <Route path="/rider/history" element={<RiderTripHistoryPage />} />
-          {/* Rating page */}
+            <Route path="/rider/profile" element={<RiderProfilePage />} />
+            {/* Rating page */}
             <Route path="/rider/rate/:tripId" element={<RateTripPage />} />
           </Route>
-          
+
           {/* Driver (protected + role-gated) */}
           <Route element={<RoleRoute allow={["DRIVER"]} />}>
             <Route path="/driver" element={<DriverDashboardPage />} />
@@ -74,8 +75,8 @@ export default function App() {
         </Route>
 
         <Route element={<RoleRoute allow={["ADMIN"]} />}>
-  <Route path="/admin" element={<AdminDashboardPage />} />
-</Route>
+          <Route path="/admin" element={<AdminDashboardPage />} />
+        </Route>
       </Routes>
     </BrowserRouter>
   );

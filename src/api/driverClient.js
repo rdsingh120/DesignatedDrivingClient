@@ -17,3 +17,11 @@ export const apiUploadDriverPhoto = (file) => {
     },
   });
 };
+export async function updateDriverLocation(lat, lng) {
+  const res = await http.post("/api/drivers/location", {
+    lat,
+    lng,
+  });
+
+  return res.data;
+}
