@@ -117,8 +117,9 @@ const tripsSlice = createSlice({
   initialState: {
     current: null,
     mine: [],
-    open: [],   
+    open: [],
     loading: false,
+    polling: false,
     error: null,
   },
   reducers: {
@@ -141,10 +142,10 @@ const tripsSlice = createSlice({
       // .addCase(dispatchTrip.fulfilled, (s, a) => { s.loading = false; s.current = a.payload; })
       // .addCase(dispatchTrip.rejected, (s, a) => { s.loading = false; s.error = a.payload || "Failed to dispatch trip"; })
 
-      // fetch by id
-      .addCase(fetchTripById.pending, (s) => { s.loading = true; s.error = null; })
-      .addCase(fetchTripById.fulfilled, (s, a) => { s.loading = false; s.current = a.payload; })
-      .addCase(fetchTripById.rejected, (s, a) => { s.loading = false; s.error = a.payload || "Failed to fetch trip"; })
+      // fetch by id (background poll — does not touch loading)
+      .addCase(fetchTripById.pending, (s) => { s.polling = true; })
+      .addCase(fetchTripById.fulfilled, (s, a) => { s.polling = false; s.current = a.payload; })
+      .addCase(fetchTripById.rejected, (s, a) => { s.polling = false; s.error = a.payload || "Failed to fetch trip"; })
 
       // history
       .addCase(fetchMyTrips.pending, (s) => { s.loading = true; s.error = null; })
