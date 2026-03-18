@@ -262,7 +262,7 @@ export default function RiderTripPage() {
                     >
                       {trip?.driverProfile?.profilePhoto ? (
                         <img
-                          src={trip.driverProfile.profilePhoto}
+                          src={`${import.meta.env.VITE_API_BASE_URL}${trip.driverProfile.profilePhoto}`}
                           alt="Driver"
                           style={{ width: "100%", height: "100%", objectFit: "cover" }}
                         />
