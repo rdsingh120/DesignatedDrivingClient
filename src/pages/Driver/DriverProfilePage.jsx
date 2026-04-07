@@ -73,7 +73,6 @@ export default function DriverProfilePage() {
     setSaving(true);
 
     try {
-      // Upload photo if selected
       if (photo) {
         await apiUploadDriverPhoto(photo);
       }
@@ -127,22 +126,67 @@ export default function DriverProfilePage() {
         <div style={cardStyle}>
           <form onSubmit={onSubmit} style={{ display: "grid", gap: 12 }}>
             {/* Profile Photo */}
-            <div style={{ textAlign: "center", marginBottom: 10 }}>
-              {photoPreview && (
-                <img
-                  src={photoPreview}
-                  alt="Driver"
-                  style={{
-                    width: 100,
-                    height: 100,
-                    borderRadius: "50%",
-                    objectFit: "cover",
-                    marginBottom: 10,
-                  }}
-                />
-              )}
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                gap: 10,
+                marginBottom: 16,
+              }}
+            >
+              <label
+                htmlFor="driver-photo"
+                style={{
+                  width: 110,
+                  height: 110,
+                  borderRadius: "50%",
+                  overflow: "hidden",
+                  background: photoPreview ? "transparent" : colors.bgBase,
+                  border: `2px dashed ${colors.border}`,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  cursor: "pointer",
+                  transition: "all 0.2s",
+                }}
+              >
+                {photoPreview ? (
+                  <img
+                    src={photoPreview}
+                    alt="Driver"
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                    }}
+                  />
+                ) : (
+                  <span style={{ fontSize: 28, color: colors.textMuted }}>📷</span>
+                )}
+              </label>
 
-              <input type="file" accept="image/*" onChange={onPhotoChange} />
+              <input
+                id="driver-photo"
+                type="file"
+                accept="image/*"
+                onChange={onPhotoChange}
+                style={{ display: "none" }}
+              />
+
+              <label
+                htmlFor="driver-photo"
+                style={{
+                  padding: "6px 14px",
+                  borderRadius: 8,
+                  border: `1px solid ${colors.border}`,
+                  fontSize: 13,
+                  cursor: "pointer",
+                  color: colors.textSecondary,
+                }}
+              >
+                {photoPreview ? "Change Photo" : "Upload Photo"}
+              </label>
             </div>
 
             {/* Phone */}

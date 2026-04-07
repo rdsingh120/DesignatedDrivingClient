@@ -23,7 +23,7 @@ export default function LoginPage() {
     const result = await dispatch(login({ email, password }));
     if (login.fulfilled.match(result)) {
       const role = (result.payload?.user?.role || "").toUpperCase();
-      const dest = from && from !== "/" ? from : role === "DRIVER" ? "/driver" : "/rider";
+      const dest = from && from !== "/" ? from : role === "DRIVER" ? "/driver" : role === "ADMIN" ? "/admin" : "/rider";
       navigate(dest, { replace: true });
     }
   }
