@@ -25,6 +25,7 @@ import { waitForAPI } from "./utils/apiWakeCheck";
 import APILoadingScreen from "./components/APILoadingScreen";
 
 
+
 function RoleRedirect() {
   const role = useAppSelector(selectRole);
   if (role === "RIDER") return <Navigate to="/rider" replace />;
