@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../../app/hooks";
 import { acceptTrip } from "../../../features/trips/tripsSlice";
 import RoutePreviewMap from "../../../features/estimates/components/RoutePreviewMap";
@@ -7,6 +8,7 @@ import { colors, alpha, gradients } from "../../../styles/theme";
 
 export default function TripMarketplace() {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const openTrips = useAppSelector((s) => s.trips.open || []);
   const tripLoading = useAppSelector((s) => s.trips.loading);
 
@@ -126,7 +128,7 @@ export default function TripMarketplace() {
                 </div>
                 {/* TODO: implement trip details view */}
                 <button
-                  onClick={() => {}}
+                  onClick={() => navigate(`/driver/trip/${selectedTrip._id}`)}
                   onMouseEnter={() => setDetailsHovered(true)}
                   onMouseLeave={() => setDetailsHovered(false)}
                   style={{
