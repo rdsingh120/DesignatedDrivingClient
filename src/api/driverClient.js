@@ -17,3 +17,6 @@ export const apiUploadDriverPhoto = (file) => {
     },
   });
 };
+
+export const apiUpdateMyDriverLocation = (payload) =>
+  http.patch("/api/driver-profiles/me/location", payload);

@@ -153,6 +153,7 @@ export default function RiderTripPage() {
               <RoutePreviewMap
                 pickup={trip.pickup_geo}
                 dropoff={trip.dropoff_geo}
+                driverLocation={trip.driverProfile?.current_location}
                 route_polyline={trip.route_polyline}
                 height={420}
               />
