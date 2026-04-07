@@ -20,6 +20,7 @@ import RiderTripHistoryPage from "./pages/Rider/RiderTripHistoryPage";
 import RiderProfilePage from "./pages/Rider/RiderProfilePage";
 import { waitForAPI } from "./utils/apiWakeCheck";
 import APILoadingScreen from "./components/APILoadingScreen";
+import RateTripPage from "./pages/RateTripPage";
 
 
 function RoleRedirect() {
