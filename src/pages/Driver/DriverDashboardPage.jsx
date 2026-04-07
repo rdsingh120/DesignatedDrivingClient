@@ -14,7 +14,7 @@ import DriverStatusCard from "./components/DriverStatusCard";
 import ActiveTripCard from "./components/ActiveTripCard";
 import TripMarketplace from "./components/TripMarketplace";
 import { Navigate } from "react-router-dom";
-import { updateDriverLocation } from "../../api/driverClient";
+import { apiUpdateMyDriverLocation  } from "../../api/driverClient";
 
 export default function DriverDashboardPage() {
   const dispatch = useAppDispatch();
@@ -51,7 +51,7 @@ export default function DriverDashboardPage() {
       const lat = pos.coords.latitude;
       const lng = pos.coords.longitude;
 
-      updateDriverLocation(lat, lng).catch(console.error);
+      apiUpdateMyDriverLocation({ lat, lng }).catch(console.error);
     },
     (err) => {
       console.error("GPS error:", err);
