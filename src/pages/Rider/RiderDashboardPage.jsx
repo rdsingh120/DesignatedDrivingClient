@@ -1,3 +1,4 @@
+import React from "react";
 import { Link } from "react-router-dom";
 import { Car, Clock, MapPin, User } from "lucide-react";
 import { colors, alpha, gradients } from "../../styles/theme";
