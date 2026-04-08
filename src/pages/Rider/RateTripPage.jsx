@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useAppDispatch, useAppSelector } from "../app/hooks";
-import { submitRating } from "../features/ratings/ratingsSlice";
-import { fetchTripById, clearCurrentTrip } from "../features/trips/tripsSlice";
-import { colors, alpha, gradients, btn, errorBanner } from "../styles/theme";
+import { useAppDispatch, useAppSelector } from "../../app/hooks";
+import { submitRating } from "../../features/ratings/ratingsSlice";
+import { fetchTripById, clearCurrentTrip } from "../../features/trips/tripsSlice";
+import { colors, alpha, gradients, btn, errorBanner } from "../../styles/theme";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -73,6 +73,24 @@ function DriverInfoCard({ driverProfile }) {
           {phone && (
             <p style={{ margin: "2px 0 0", fontSize: 13, color: colors.textMuted }}>{phone}</p>
           )}
+          {driverProfile?.ratingCount > 0 ? (
+            <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 6 }}>
+              <span style={{ display: "inline-flex", position: "relative", gap: 2 }}>
+                {[1, 2, 3, 4, 5].map((s) => <span key={s} style={{ fontSize: 14, color: colors.border, lineHeight: 1 }}>★</span>)}
+                <span style={{ position: "absolute", top: 0, left: 0, overflow: "hidden", width: `${(driverProfile.averageRating / 5) * 100}%`, display: "flex", gap: 2, whiteSpace: "nowrap" }}>
+                  {[1, 2, 3, 4, 5].map((s) => <span key={s} style={{ fontSize: 14, color: "#f5b50a", lineHeight: 1, flexShrink: 0 }}>★</span>)}
+                </span>
+              </span>
+              <span style={{ fontSize: 13, color: colors.textSecondary, fontWeight: 600 }}>
+                {driverProfile.averageRating.toFixed(1)}
+              </span>
+              <span style={{ fontSize: 12, color: colors.textFaint }}>
+                ({driverProfile.ratingCount})
+              </span>
+            </div>
+          ) : (
+            <p style={{ margin: "6px 0 0", fontSize: 12, color: colors.textFaint }}>No ratings yet</p>
+          )}
         </div>
       </div>
     </div>
@@ -124,8 +142,8 @@ function TripSummaryCard({ trip, style: outerStyle = {} }) {
   const date = trip.completedAt
     ? new Date(trip.completedAt).toLocaleString([], { dateStyle: "medium", timeStyle: "short" })
     : trip.createdAt
-    ? new Date(trip.createdAt).toLocaleString([], { dateStyle: "medium", timeStyle: "short" })
-    : null;
+      ? new Date(trip.createdAt).toLocaleString([], { dateStyle: "medium", timeStyle: "short" })
+      : null;
   const duration = trip.duration_minutes ? `${Math.round(trip.duration_minutes)} min` : null;
   const distance = trip.distance_km ? `${trip.distance_km.toFixed(1)} km` : null;
 

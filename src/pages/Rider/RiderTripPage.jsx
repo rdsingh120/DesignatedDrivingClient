@@ -132,21 +132,24 @@ export default function RiderTripPage() {
                   padding: "20px 24px",
                 }}>
                   <div style={{
-                    width: 40,
-                    height: 40,
+                    width: 44,
+                    height: 44,
                     borderRadius: "50%",
-                    background: "rgba(16,185,129,0.12)",
-                    border: "1.5px solid rgba(16,185,129,0.3)",
+                    background: colors.primary,
+                    border: "2px solid rgba(99,102,241,0.6)",
+                    boxShadow: "0 0 12px rgba(99,102,241,0.4)",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
                     flexShrink: 0,
-                    fontSize: 18,
+                    fontSize: 20,
+                    color: "#fff",
+                    fontWeight: 700,
                   }}>
                     ✓
                   </div>
                   <div style={{ flex: 1 }}>
-                    <p style={{ margin: 0, fontSize: 14, fontWeight: 600, color: colors.successLight }}>
+                    <p style={{ margin: 0, fontSize: 14, fontWeight: 600, color: colors.primaryLight }}>
                       Rating submitted
                     </p>
                     <p style={{ margin: "2px 0 0", fontSize: 13, color: colors.textSecondary }}>
@@ -333,6 +336,25 @@ export default function RiderTripPage() {
                       <span style={{ fontSize: 14, color: colors.textPrimary }}>
                         <strong>Phone:</strong> {trip?.driverProfile?.phoneNumber || "Not available"}
                       </span>
+
+                      {trip?.driverProfile?.ratingCount > 0 ? (
+                        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                          <span style={{ display: "inline-flex", position: "relative", gap: 2 }}>
+                            {[1,2,3,4,5].map((s) => <span key={s} style={{ fontSize: 14, color: colors.border, lineHeight: 1 }}>★</span>)}
+                            <span style={{ position: "absolute", top: 0, left: 0, overflow: "hidden", width: `${(trip.driverProfile.averageRating / 5) * 100}%`, display: "flex", gap: 2, whiteSpace: "nowrap" }}>
+                              {[1,2,3,4,5].map((s) => <span key={s} style={{ fontSize: 14, color: "#f5b50a", lineHeight: 1, flexShrink: 0 }}>★</span>)}
+                            </span>
+                          </span>
+                          <span style={{ fontSize: 13, color: colors.textSecondary, fontWeight: 600 }}>
+                            {trip.driverProfile.averageRating.toFixed(1)}
+                          </span>
+                          <span style={{ fontSize: 12, color: colors.textFaint }}>
+                            ({trip.driverProfile.ratingCount})
+                          </span>
+                        </div>
+                      ) : (
+                        <span style={{ fontSize: 12, color: colors.textFaint }}>No ratings yet</span>
+                      )}
                     </div>
                   </div>
                 </div>
