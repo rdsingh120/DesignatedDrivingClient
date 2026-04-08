@@ -11,7 +11,7 @@ import DriverStatusCard from "./components/DriverStatusCard";
 import ActiveTripCard from "./components/ActiveTripCard";
 import TripMarketplace from "./components/TripMarketplace";
 import { Navigate } from "react-router-dom";
-import { apiUpdateMyDriverLocation } from "../../api/driverClient";
+import { apiUpdateMyDriverLocation  } from "../../api/driverClient";
 
 export default function DriverDashboardPage() {
   const dispatch = useAppDispatch();
@@ -40,27 +40,27 @@ export default function DriverDashboardPage() {
 
   //
   useEffect(() => {
-    if (!navigator.geolocation || !driverProfile) return;
+  if (!navigator.geolocation || !driverProfile) return;
 
-    const watchId = navigator.geolocation.watchPosition(
-      (pos) => {
-        const lat = pos.coords.latitude;
-        const lng = pos.coords.longitude;
+  const watchId = navigator.geolocation.watchPosition(
+    (pos) => {
+      const lat = pos.coords.latitude;
+      const lng = pos.coords.longitude;
 
-        apiUpdateMyDriverLocation({ lat, lng }).catch(console.error);
-      },
-      (err) => {
-        console.error("GPS error:", err);
-      },
-      {
-        enableHighAccuracy: true,
-        maximumAge: 5000,
-        timeout: 10000,
-      }
-    );
+      apiUpdateMyDriverLocation({ lat, lng }).catch(console.error);
+    },
+    (err) => {
+      console.error("GPS error:", err);
+    },
+    {
+      enableHighAccuracy: true,
+      maximumAge: 5000,
+      timeout: 10000,
+    }
+  );
 
-    return () => navigator.geolocation.clearWatch(watchId);
-  }, [driverProfile]);
+  return () => navigator.geolocation.clearWatch(watchId);
+}, [driverProfile]);
   //
 
   const canShowMarketplace = !activeTripId && isAvailable && isVerified;
