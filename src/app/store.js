@@ -6,6 +6,7 @@ import estimatesReducer from "../features/estimates/estimatesSlice";
 import tripsReducer from "../features/trips/tripsSlice";
 import driverProfilesReducer from "../features/driver/driverProfilesSlice";
 import ratingsReducer from "../features/ratings/ratingsSlice";
+import notificationsReducer from "../features/notifications/notificationsSlice";
 
 export const store = configureStore({
   reducer: {
@@ -16,6 +17,7 @@ export const store = configureStore({
     trips: tripsReducer,
     driverProfiles: driverProfilesReducer,
     ratings: ratingsReducer,
+    notifications: notificationsReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

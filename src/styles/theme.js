@@ -221,6 +221,71 @@ export const btn = {
   },
 };
 
+// ─── Icon Button (circular action button, e.g. bell, close) ──────────────────
+export const iconBtn = {
+  position: "relative",
+  display: "flex", alignItems: "center", justifyContent: "center",
+  width: 36, height: 36, borderRadius: "50%",
+  border: "none", cursor: "pointer",
+  transition: "box-shadow 0.2s",
+};
+
+// ─── Dropdown Panel ───────────────────────────────────────────────────────────
+export const dropdown = {
+  position: "absolute",
+  background: colors.bgBase,
+  border: `1px solid ${colors.border}`,
+  borderRadius: 14,
+  boxShadow: "0 8px 48px rgba(0,0,0,0.5)",
+  overflowY: "auto",
+  zIndex: 1000,
+};
+
+// ─── Count Badge (e.g. unread count on bell icon) ─────────────────────────────
+export const countBadge = {
+  position: "absolute", top: 0, right: 0,
+  minWidth: 20, height: 20, borderRadius: 10,
+  background: colors.danger, color: "#fff",
+  fontSize: 11, fontWeight: 700,
+  display: "flex", alignItems: "center", justifyContent: "center",
+  padding: "0 5px", lineHeight: 1,
+};
+
+// ─── Pill / Tag (e.g. "3 new", status labels) ─────────────────────────────────
+export const pill = {
+  padding: "1px 7px",
+  background: alpha.primary15,
+  border: `1px solid ${alpha.primary25}`,
+  borderRadius: 20,
+  fontSize: 11, fontWeight: 700,
+  color: colors.primaryLight,
+};
+
+// ─── Text Button (bare action link, no border or background) ──────────────────
+export const textBtn = {
+  background: "none", border: "none",
+  cursor: "pointer", padding: 0,
+  fontWeight: 600, fontSize: 12,
+};
+
+// ─── Empty State ──────────────────────────────────────────────────────────────
+export const emptyState = {
+  padding: "32px 16px",
+  textAlign: "center",
+  color: colors.textMuted,
+  fontSize: 13,
+};
+
+// ─── List Row (clickable row inside a list or dropdown) ───────────────────────
+export const listRow = {
+  width: "100%",
+  display: "flex", alignItems: "flex-start", gap: 12,
+  padding: "12px 16px",
+  border: "none", borderBottom: `1px solid ${colors.border}`,
+  cursor: "pointer", textAlign: "left",
+  transition: "background 0.1s",
+};
+
 // ─── Modal ────────────────────────────────────────────────────────────────────
 export const modalOverlay = {
   position: "fixed",
