@@ -244,11 +244,11 @@ export const dropdown = {
 // ─── Count Badge (e.g. unread count on bell icon) ─────────────────────────────
 export const countBadge = {
   position: "absolute", top: 0, right: 0,
-  minWidth: 20, height: 20, borderRadius: 10,
+  minWidth: 16, height: 16, borderRadius: 8,
   background: colors.danger, color: "#fff",
-  fontSize: 11, fontWeight: 700,
+  fontSize: 9, fontWeight: 700,
   display: "flex", alignItems: "center", justifyContent: "center",
-  padding: "0 5px", lineHeight: 1,
+  padding: "0 4px", lineHeight: 1,
 };
 
 // ─── Pill / Tag (e.g. "3 new", status labels) ─────────────────────────────────

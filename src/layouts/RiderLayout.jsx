@@ -1,13 +1,16 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
+import { Toaster } from "react-hot-toast";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
 import { logout, selectUser } from "../features/auth/authSlice";
 import { LogOut, User } from "lucide-react";
 import NotificationCenter from "../pages/Rider/components/NotificationCenter";
 import { colors, gradients } from "../styles/theme";
+import DrivlyLogo from "../components/DrivlyLogo";
 
 export default function RiderLayout() {
   const dispatch = useAppDispatch();
   const user = useAppSelector(selectUser);
+  const navigate = useNavigate();
 
   return (
     <div style={{ minHeight: "100vh", background: gradients.page, color: colors.textPrimary, fontFamily: "system-ui, sans-serif" }}>
@@ -25,8 +28,10 @@ export default function RiderLayout() {
           zIndex: 100,
         }}
       >
-        {/* Left: user info */}
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+        {/* Left: logo + user info */}
+        <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+          <DrivlyLogo onClick={() => navigate("/rider")} />
+          <div style={{ width: 1, height: 28, background: colors.border }} />
           <div
             style={{
               width: 36,
@@ -80,6 +85,7 @@ export default function RiderLayout() {
         </div>
       </header>
 
+      <Toaster position="top-right" containerStyle={{ top: 70 }} />
       <Outlet />
     </div>
   );
