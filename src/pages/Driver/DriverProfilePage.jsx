@@ -9,6 +9,7 @@ import {
 } from "../../api/driverClient";
 
 import { colors, pageStyle, cardStyle, inputStyle, btn } from "../../styles/theme";
+import DriverNavBar from "../../components/DriverNavBar";
 
 export default function DriverProfilePage() {
   const navigate = useNavigate();
@@ -98,6 +99,7 @@ export default function DriverProfilePage() {
 
   return (
     <div style={pageStyle}>
+      <DriverNavBar />
       {/* Header */}
       <div style={{ padding: "20px 24px 0", marginBottom: 28 }}>
         <button

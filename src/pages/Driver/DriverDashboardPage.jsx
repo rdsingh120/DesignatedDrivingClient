@@ -2,23 +2,19 @@
 import { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { useTripPolling } from "../../hooks/useTripPolling";
-import { logout, selectUser } from "../../features/auth/authSlice";
-import {
-  getMyDriverProfile,
-  updateMyDriverStatus,
-} from "../../features/driver/driverProfilesSlice";
+import { getMyDriverProfile } from "../../features/driver/driverProfilesSlice";
 import { fetchTripById, fetchOpenTrips } from "../../features/trips/tripsSlice";
 import { colors, alpha, gradients } from "../../styles/theme";
+import DriverNavBar from "../../components/DriverNavBar";
 
 import DriverStatusCard from "./components/DriverStatusCard";
 import ActiveTripCard from "./components/ActiveTripCard";
 import TripMarketplace from "./components/TripMarketplace";
 import { Navigate } from "react-router-dom";
-import { apiUpdateMyDriverLocation  } from "../../api/driverClient";
+import { apiUpdateMyDriverLocation } from "../../api/driverClient";
 
 export default function DriverDashboardPage() {
   const dispatch = useAppDispatch();
-  const user = useAppSelector(selectUser);
   const driverProfile = useAppSelector((s) => s.driverProfiles.me);
   const activeTripId = driverProfile?.activeTrip || null;
   const isAvailable = driverProfile?.availability === "AVAILABLE";
@@ -44,37 +40,30 @@ export default function DriverDashboardPage() {
 
   //
   useEffect(() => {
-  if (!navigator.geolocation || !driverProfile) return;
+    if (!navigator.geolocation || !driverProfile) return;
 
-  const watchId = navigator.geolocation.watchPosition(
-    (pos) => {
-      const lat = pos.coords.latitude;
-      const lng = pos.coords.longitude;
+    const watchId = navigator.geolocation.watchPosition(
+      (pos) => {
+        const lat = pos.coords.latitude;
+        const lng = pos.coords.longitude;
 
-      apiUpdateMyDriverLocation({ lat, lng }).catch(console.error);
-    },
-    (err) => {
-      console.error("GPS error:", err);
-    },
-    {
-      enableHighAccuracy: true,
-      maximumAge: 5000,
-      timeout: 10000,
-    }
-  );
+        apiUpdateMyDriverLocation({ lat, lng }).catch(console.error);
+      },
+      (err) => {
+        console.error("GPS error:", err);
+      },
+      {
+        enableHighAccuracy: true,
+        maximumAge: 5000,
+        timeout: 10000,
+      }
+    );
 
-  return () => navigator.geolocation.clearWatch(watchId);
-}, [driverProfile]);
+    return () => navigator.geolocation.clearWatch(watchId);
+  }, [driverProfile]);
   //
 
   const canShowMarketplace = !activeTripId && isAvailable && isVerified;
-
-  async function handleSignOut() {
-    if (isAvailable) {
-      await dispatch(updateMyDriverStatus({ availability: "OFFLINE" }));
-    }
-    dispatch(logout());
-  }
 
   if (driverProfile && !driverProfile.licenseNumber) {
     return <Navigate to="/driver/profile" replace />;
@@ -90,72 +79,7 @@ export default function DriverDashboardPage() {
         padding: "0 0 60px",
       }}
     >
-      {/* Header */}
-      <div
-        style={{
-          background: "rgba(15,23,42,0.8)",
-          borderBottom: `1px solid ${colors.borderSubtle}`,
-          padding: "16px 28px",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          backdropFilter: "blur(8px)",
-          position: "sticky",
-          top: 0,
-          zIndex: 10,
-        }}
-      >
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <div
-            style={{
-              width: 36,
-              height: 36,
-              borderRadius: "50%",
-              overflow: "hidden",
-              background: gradients.primary,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            {driverProfile?.profilePhoto ? (
-              <img
-                src={`${import.meta.env.VITE_API_BASE_URL}${driverProfile.profilePhoto}`}
-                alt="Driver"
-                style={{
-                  width: "100%",
-                  height: "100%",
-                  objectFit: "cover",
-                }}
-              />
-            ) : (
-              <span style={{ fontSize: 18 }}>🚘</span>
-            )}
-          </div>
-          <div>
-            <div style={{ fontWeight: 700, fontSize: 15 }}>Driver Dashboard</div>
-            <div style={{ fontSize: 12, color: colors.textMuted }}>
-              {user?.name || user?.email || "Driver"}
-            </div>
-          </div>
-        </div>
-
-        <button
-          onClick={handleSignOut}
-          style={{
-            background: alpha.dangerBtn,
-            border: `1px solid ${alpha.dangerBtnBorder}`,
-            color: colors.dangerLight,
-            padding: "7px 14px",
-            borderRadius: 8,
-            cursor: "pointer",
-            fontSize: 13,
-            fontWeight: 600,
-          }}
-        >
-          Sign out
-        </button>
-      </div>
+      <DriverNavBar />
 
       <div style={{ maxWidth: 1100, margin: "0 auto", padding: "28px 24px 0" }}>
         <DriverStatusCard />
