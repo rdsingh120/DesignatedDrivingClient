@@ -123,19 +123,72 @@ export default function RiderTripPage() {
 
             {/* Completion actions */}
             {trip.status === "COMPLETED" && (
-              <div style={{ ...cardStyle, textAlign: "center", padding: "24px 20px" }}>
-                <p style={{ margin: "0 0 16px", fontSize: 14, color: colors.textSecondary }}>
-                  How was your ride{driverName ? ` with ${driverName}` : ""}?
-                </p>
-                <div style={{ display: "flex", gap: 10, justifyContent: "center", flexWrap: "wrap" }}>
-                  <Link to="/rider/history" style={{ textDecoration: "none" }}>
+              trip.rating ? (
+                <div style={{
+                  ...cardStyle,
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 16,
+                  padding: "20px 24px",
+                }}>
+                  <div style={{
+                    width: 40,
+                    height: 40,
+                    borderRadius: "50%",
+                    background: "rgba(16,185,129,0.12)",
+                    border: "1.5px solid rgba(16,185,129,0.3)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    flexShrink: 0,
+                    fontSize: 18,
+                  }}>
+                    ✓
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <p style={{ margin: 0, fontSize: 14, fontWeight: 600, color: colors.successLight }}>
+                      Rating submitted
+                    </p>
+                    <p style={{ margin: "2px 0 0", fontSize: 13, color: colors.textSecondary }}>
+                      Thanks for your feedback{driverName ? ` on ${driverName}'s service` : ""}.
+                    </p>
+                    {trip.rating?.stars && (
+                      <div style={{ marginTop: 6 }}>
+                        {[1,2,3,4,5].map((s) => (
+                          <span key={s} style={{ fontSize: 16, color: s <= trip.rating.stars ? "#f5b50a" : colors.border }}>★</span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ) : (
+                <div style={{ ...cardStyle, display: "flex", alignItems: "center", justifyContent: "space-between", padding: "20px 24px", flexWrap: "wrap", gap: 12 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+                    {trip?.driverProfile?.profilePhoto ? (
+                      <img
+                        src={`${import.meta.env.VITE_API_BASE_URL}${trip.driverProfile.profilePhoto}`}
+                        alt={driverName}
+                        style={{ width: 44, height: 44, borderRadius: "50%", objectFit: "cover", border: `2px solid ${colors.border}`, flexShrink: 0 }}
+                      />
+                    ) : (
+                      <div style={{ width: 44, height: 44, borderRadius: "50%", background: colors.border, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontSize: 20 }}>
+                        👤
+                      </div>
+                    )}
+                    <div>
+                      <p style={{ margin: 0, fontSize: 15, fontWeight: 600, color: colors.textPrimary }}>
+                        How was your ride{driverName ? ` with ${driverName}` : ""}?
+                      </p>
+                      <p style={{ margin: "3px 0 0", fontSize: 13, color: colors.textSecondary }}>
+                        Share your experience to help improve service quality.
+                      </p>
+                    </div>
+                  </div>
+                  <Link to={`/rider/rate/${trip._id}`} style={{ textDecoration: "none", flexShrink: 0 }}>
                     <button style={btn.primary}>Rate Your Driver</button>
                   </Link>
-                  <button style={btn.ghost} onClick={() => navigate("/rider")}>
-                    Back to Dashboard
-                  </button>
                 </div>
-              </div>
+              )
             )}
 
             {/* Cancelled actions */}
