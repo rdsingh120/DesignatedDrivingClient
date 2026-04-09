@@ -133,6 +133,15 @@ export const cardStyle = {
   marginBottom: 16,
 };
 
+// Tighter card variant used in detail/form pages (e.g. RateTripPage)
+export const detailCard = {
+  background: colors.bgBase,
+  border: `1px solid ${colors.border}`,
+  borderRadius: 12,
+  padding: 24,
+  marginBottom: 16,
+};
+
 // ─── Section Label ────────────────────────────────────────────────────────────
 export const sectionLabel = {
   margin: "0 0 16px",
@@ -141,6 +150,16 @@ export const sectionLabel = {
   color: colors.textSecondary,
   textTransform: "uppercase",
   letterSpacing: "0.06em",
+};
+
+// Compact field label (smaller, tighter margin) used in detail/form pages
+export const fieldLabel = {
+  margin: "0 0 4px",
+  fontSize: 11,
+  fontWeight: 600,
+  color: colors.textSecondary,
+  textTransform: "uppercase",
+  letterSpacing: "0.07em",
 };
 
 // ─── Input ────────────────────────────────────────────────────────────────────
@@ -154,6 +173,47 @@ export const inputStyle = {
   fontSize: 14,
   boxSizing: "border-box",
   outline: "none",
+};
+
+export const textareaStyle = {
+  width: "100%",
+  padding: "12px 14px",
+  background: colors.bgDeep,
+  border: `1.5px solid ${colors.border}`,
+  borderRadius: 8,
+  color: colors.textPrimary,
+  fontSize: 14,
+  resize: "none",
+  boxSizing: "border-box",
+  outline: "none",
+  fontFamily: "inherit",
+  lineHeight: 1.5,
+};
+
+// ─── Plate Number Tag ─────────────────────────────────────────────────────────
+export const plateTag = {
+  padding: "4px 12px",
+  background: alpha.neutral15,
+  borderRadius: 6,
+  fontSize: 13,
+  fontFamily: "monospace",
+  fontWeight: 600,
+  color: colors.textSecondary,
+  border: `1px solid ${colors.border}`,
+  letterSpacing: "0.08em",
+};
+
+// ─── Back / Breadcrumb Button ─────────────────────────────────────────────────
+export const backBtn = {
+  background: "none",
+  border: "none",
+  color: colors.textMuted,
+  cursor: "pointer",
+  fontSize: 13,
+  padding: 0,
+  display: "flex",
+  alignItems: "center",
+  gap: 4,
 };
 
 // ─── Button Variants ──────────────────────────────────────────────────────────

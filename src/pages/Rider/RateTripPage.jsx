@@ -3,32 +3,13 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { submitRating } from "../../features/ratings/ratingsSlice";
 import { fetchTripById, clearCurrentTrip } from "../../features/trips/tripsSlice";
-import { colors, alpha, gradients, btn, errorBanner } from "../../styles/theme";
+import { colors, alpha, gradients, btn, errorBanner, pageStyle, textareaStyle, plateTag, backBtn, detailCard as card, fieldLabel as sectionLabel } from "../../styles/theme";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const STAR_LABELS = ["", "Terrible", "Bad", "Okay", "Good", "Amazing"];
 const STAR_COLORS = ["", colors.danger, "#f97316", colors.warning, "#84cc16", colors.success];
 const TIP_PRESETS = [0, 1, 2, 5];
-
-// ─── Shared styles ────────────────────────────────────────────────────────────
-
-const card = {
-  background: colors.bgBase,
-  border: `1px solid ${colors.border}`,
-  borderRadius: 12,
-  padding: 24,
-  marginBottom: 16,
-};
-
-const sectionLabel = {
-  margin: "0 0 4px",
-  fontSize: 11,
-  fontWeight: 600,
-  color: colors.textSecondary,
-  textTransform: "uppercase",
-  letterSpacing: "0.07em",
-};
 
 // ─── Left column: Driver info card ────────────────────────────────────────────
 
@@ -112,21 +93,7 @@ function YourVehicleCard({ vehicle }) {
           )}
         </div>
         {vehicle.plateNumber && (
-          <span
-            style={{
-              padding: "4px 12px",
-              background: alpha.neutral15,
-              borderRadius: 6,
-              fontSize: 13,
-              fontFamily: "monospace",
-              fontWeight: 600,
-              color: colors.textSecondary,
-              border: `1px solid ${colors.border}`,
-              letterSpacing: "0.08em",
-            }}
-          >
-            {vehicle.plateNumber}
-          </span>
+          <span style={plateTag}>{vehicle.plateNumber}</span>
         )}
       </div>
     </div>
@@ -348,14 +315,6 @@ function TipSelector({ value, onChange }) {
   );
 }
 
-// ─── Page ─────────────────────────────────────────────────────────────────────
-
-const pageStyle = {
-  minHeight: "100vh",
-  background: `linear-gradient(160deg, ${colors.bgDeep} 0%, ${colors.bgBase} 100%)`,
-  color: colors.textPrimary,
-  fontFamily: "system-ui, sans-serif",
-};
 
 export default function RateTripPage() {
   const { tripId } = useParams();
@@ -373,6 +332,7 @@ export default function RateTripPage() {
   const ratingError = useAppSelector((s) => s.ratings.error);
 
   useEffect(() => {
+    dispatch(clearCurrentTrip());
     dispatch(fetchTripById(tripId));
   }, [dispatch, tripId]);
 
@@ -386,8 +346,34 @@ export default function RateTripPage() {
     }
   };
 
+  // ── Success ──
+  if (submitted) {
+    return (
+      <div style={{ ...pageStyle, display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <div style={{ width: "100%", maxWidth: 480, padding: "0 32px" }}>
+          <div style={{ ...card, textAlign: "center", padding: "64px 32px" }}>
+            <div style={{ fontSize: 64, marginBottom: 20 }}>🌟</div>
+            <h2 style={{ margin: "0 0 8px", fontSize: 24, fontWeight: 700 }}>Thanks for rating!</h2>
+            <p style={{ margin: "0 0 6px", fontSize: 15, color: colors.textMuted }}>
+              Your feedback helps keep the service great.
+            </p>
+            {tip > 0 && (
+              <p style={{ margin: "0 0 32px", fontSize: 14, color: colors.successLight }}>
+                ${tip.toFixed(2)} tip sent to your driver.
+              </p>
+            )}
+            {tip === 0 && <div style={{ marginBottom: 32 }} />}
+            <button style={{ ...btn.primary, padding: "12px 40px", fontSize: 15 }} onClick={() => navigate("/rider/history")}>
+              View Trip History
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   // ── Loading ──
-  if (tripLoading && !trip) {
+  if (tripLoading || !trip) {
     return (
       <div style={pageStyle}>
         <PageHeader onBack={() => navigate(-1)} />
@@ -421,31 +407,6 @@ export default function RateTripPage() {
     );
   }
 
-  // ── Success ──
-  if (submitted) {
-    return (
-      <div style={{ ...pageStyle, display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <div style={{ width: "100%", maxWidth: 480, padding: "0 32px" }}>
-          <div style={{ ...card, textAlign: "center", padding: "64px 32px" }}>
-            <div style={{ fontSize: 64, marginBottom: 20 }}>🌟</div>
-            <h2 style={{ margin: "0 0 8px", fontSize: 24, fontWeight: 700 }}>Thanks for rating!</h2>
-            <p style={{ margin: "0 0 6px", fontSize: 15, color: colors.textMuted }}>
-              Your feedback helps keep the service great.
-            </p>
-            {tip > 0 && (
-              <p style={{ margin: "0 0 32px", fontSize: 14, color: colors.successLight }}>
-                ${tip.toFixed(2)} tip sent to your driver.
-              </p>
-            )}
-            {tip === 0 && <div style={{ marginBottom: 32 }} />}
-            <button style={{ ...btn.primary, padding: "12px 40px", fontSize: 15 }} onClick={() => navigate("/rider/history")}>
-              View Trip History
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   // ── Main form ──
   return (
@@ -498,22 +459,7 @@ export default function RateTripPage() {
               value={comment}
               onChange={(e) => setComment(e.target.value)}
               maxLength={800}
-              style={{
-                flex: 1,
-                width: "100%",
-                padding: "12px 14px",
-                background: colors.bgDeep,
-                border: `1.5px solid ${colors.border}`,
-                borderRadius: 8,
-                color: colors.textPrimary,
-                fontSize: 14,
-                minHeight: 80,
-                resize: "none",
-                boxSizing: "border-box",
-                outline: "none",
-                fontFamily: "inherit",
-                lineHeight: 1.5,
-              }}
+              style={{ ...textareaStyle, flex: 1, minHeight: 80 }}
             />
             <p style={{ margin: "5px 0 0", fontSize: 11, color: colors.textMuted, textAlign: "right" }}>
               {comment.length} / 800
@@ -565,22 +511,7 @@ function PageHeader({ onBack }) {
       }}
     >
       <div style={{ maxWidth: 980, margin: "0 auto", padding: "20px 0 16px", display: "flex", alignItems: "center", gap: 10 }}>
-        <button
-          onClick={onBack}
-          style={{
-            background: "none",
-            border: "none",
-            color: colors.textMuted,
-            cursor: "pointer",
-            fontSize: 13,
-            padding: 0,
-            display: "flex",
-            alignItems: "center",
-            gap: 4,
-          }}
-        >
-          ← Trip History
-        </button>
+        <button onClick={onBack} style={backBtn}>← Trip History</button>
         <span style={{ color: colors.textFaint, fontSize: 13 }}>/</span>
         <span style={{ fontSize: 13, color: colors.textSecondary }}>Rate Your Trip</span>
       </div>
