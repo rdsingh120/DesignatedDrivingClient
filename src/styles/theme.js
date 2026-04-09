@@ -133,6 +133,15 @@ export const cardStyle = {
   marginBottom: 16,
 };
 
+// Tighter card variant used in detail/form pages (e.g. RateTripPage)
+export const detailCard = {
+  background: colors.bgBase,
+  border: `1px solid ${colors.border}`,
+  borderRadius: 12,
+  padding: 24,
+  marginBottom: 16,
+};
+
 // ─── Section Label ────────────────────────────────────────────────────────────
 export const sectionLabel = {
   margin: "0 0 16px",
@@ -141,6 +150,16 @@ export const sectionLabel = {
   color: colors.textSecondary,
   textTransform: "uppercase",
   letterSpacing: "0.06em",
+};
+
+// Compact field label (smaller, tighter margin) used in detail/form pages
+export const fieldLabel = {
+  margin: "0 0 4px",
+  fontSize: 11,
+  fontWeight: 600,
+  color: colors.textSecondary,
+  textTransform: "uppercase",
+  letterSpacing: "0.07em",
 };
 
 // ─── Input ────────────────────────────────────────────────────────────────────
@@ -154,6 +173,47 @@ export const inputStyle = {
   fontSize: 14,
   boxSizing: "border-box",
   outline: "none",
+};
+
+export const textareaStyle = {
+  width: "100%",
+  padding: "12px 14px",
+  background: colors.bgDeep,
+  border: `1.5px solid ${colors.border}`,
+  borderRadius: 8,
+  color: colors.textPrimary,
+  fontSize: 14,
+  resize: "none",
+  boxSizing: "border-box",
+  outline: "none",
+  fontFamily: "inherit",
+  lineHeight: 1.5,
+};
+
+// ─── Plate Number Tag ─────────────────────────────────────────────────────────
+export const plateTag = {
+  padding: "4px 12px",
+  background: alpha.neutral15,
+  borderRadius: 6,
+  fontSize: 13,
+  fontFamily: "monospace",
+  fontWeight: 600,
+  color: colors.textSecondary,
+  border: `1px solid ${colors.border}`,
+  letterSpacing: "0.08em",
+};
+
+// ─── Back / Breadcrumb Button ─────────────────────────────────────────────────
+export const backBtn = {
+  background: "none",
+  border: "none",
+  color: colors.textMuted,
+  cursor: "pointer",
+  fontSize: 13,
+  padding: 0,
+  display: "flex",
+  alignItems: "center",
+  gap: 4,
 };
 
 // ─── Button Variants ──────────────────────────────────────────────────────────
@@ -219,6 +279,71 @@ export const btn = {
     fontWeight: 600,
     fontSize: 14,
   },
+};
+
+// ─── Icon Button (circular action button, e.g. bell, close) ──────────────────
+export const iconBtn = {
+  position: "relative",
+  display: "flex", alignItems: "center", justifyContent: "center",
+  width: 36, height: 36, borderRadius: "50%",
+  border: "none", cursor: "pointer",
+  transition: "box-shadow 0.2s",
+};
+
+// ─── Dropdown Panel ───────────────────────────────────────────────────────────
+export const dropdown = {
+  position: "absolute",
+  background: colors.bgBase,
+  border: `1px solid ${colors.border}`,
+  borderRadius: 14,
+  boxShadow: "0 8px 48px rgba(0,0,0,0.5)",
+  overflowY: "auto",
+  zIndex: 1000,
+};
+
+// ─── Count Badge (e.g. unread count on bell icon) ─────────────────────────────
+export const countBadge = {
+  position: "absolute", top: 0, right: 0,
+  minWidth: 16, height: 16, borderRadius: 8,
+  background: colors.danger, color: "#fff",
+  fontSize: 9, fontWeight: 700,
+  display: "flex", alignItems: "center", justifyContent: "center",
+  padding: "0 4px", lineHeight: 1,
+};
+
+// ─── Pill / Tag (e.g. "3 new", status labels) ─────────────────────────────────
+export const pill = {
+  padding: "1px 7px",
+  background: alpha.primary15,
+  border: `1px solid ${alpha.primary25}`,
+  borderRadius: 20,
+  fontSize: 11, fontWeight: 700,
+  color: colors.primaryLight,
+};
+
+// ─── Text Button (bare action link, no border or background) ──────────────────
+export const textBtn = {
+  background: "none", border: "none",
+  cursor: "pointer", padding: 0,
+  fontWeight: 600, fontSize: 12,
+};
+
+// ─── Empty State ──────────────────────────────────────────────────────────────
+export const emptyState = {
+  padding: "32px 16px",
+  textAlign: "center",
+  color: colors.textMuted,
+  fontSize: 13,
+};
+
+// ─── List Row (clickable row inside a list or dropdown) ───────────────────────
+export const listRow = {
+  width: "100%",
+  display: "flex", alignItems: "flex-start", gap: 12,
+  padding: "12px 16px",
+  border: "none", borderBottom: `1px solid ${colors.border}`,
+  cursor: "pointer", textAlign: "left",
+  transition: "background 0.1s",
 };
 
 // ─── Modal ────────────────────────────────────────────────────────────────────

@@ -5,8 +5,8 @@ import vehiclesReducer from "../features/vehicles/vehiclesSlice";
 import estimatesReducer from "../features/estimates/estimatesSlice";
 import tripsReducer from "../features/trips/tripsSlice";
 import driverProfilesReducer from "../features/driver/driverProfilesSlice";
-
-const placeholderReducer = (state = {}) => state;
+import ratingsReducer from "../features/ratings/ratingsSlice";
+import notificationsReducer from "../features/notifications/notificationsSlice";
 
 export const store = configureStore({
   reducer: {
@@ -16,6 +16,8 @@ export const store = configureStore({
     estimates: estimatesReducer,
     trips: tripsReducer,
     driverProfiles: driverProfilesReducer,
+    ratings: ratingsReducer,
+    notifications: notificationsReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
