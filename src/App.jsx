@@ -22,6 +22,7 @@ import RiderRequestPage from "./pages/Rider/RiderRequestPage";
 import RiderTripPage from "./pages/Rider/RiderTripPage";
 import RiderTripHistoryPage from "./pages/Rider/RiderTripHistoryPage";
 import RiderProfilePage from "./pages/Rider/RiderProfilePage";
+import RiderLayout from "./layouts/RiderLayout";
 import { waitForAPI } from "./utils/apiWakeCheck";
 import APILoadingScreen from "./components/APILoadingScreen";
 
@@ -58,14 +59,16 @@ export default function App() {
 
           {/* Rider (protected + role-gated) */}
           <Route element={<RoleRoute allow={["RIDER"]} />}>
-            <Route path="/rider" element={<RiderDashboardPage />} />
-            <Route path="/rider/vehicles" element={<RiderVehiclesPage />} />
-            <Route path="/rider/request" element={<RiderRequestPage />} />
-            <Route path="/rider/trip/:id" element={<RiderTripPage />} />
-            <Route path="/rider/history" element={<RiderTripHistoryPage />} />
-            <Route path="/rider/profile" element={<RiderProfilePage />} />
-            {/* Rating page */}
-            <Route path="/rider/rate/:tripId" element={<RateTripPage />} />
+            <Route element={<RiderLayout />}>
+              <Route path="/rider" element={<RiderDashboardPage />} />
+              <Route path="/rider/vehicles" element={<RiderVehiclesPage />} />
+              <Route path="/rider/request" element={<RiderRequestPage />} />
+              <Route path="/rider/trip/:id" element={<RiderTripPage />} />
+              <Route path="/rider/history" element={<RiderTripHistoryPage />} />
+              <Route path="/rider/profile" element={<RiderProfilePage />} />
+              {/* Rating page */}
+              <Route path="/rider/rate/:tripId" element={<RateTripPage />} />
+            </Route>
           </Route>
 
           {/* Driver (protected + role-gated) */}

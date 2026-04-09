@@ -1,82 +1,17 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { useAppDispatch, useAppSelector } from "../../app/hooks";
-import { logout, selectUser } from "../../features/auth/authSlice";
-import { Car, Clock, LogOut, MapPin, User } from "lucide-react";
+import { Car, Clock, MapPin, User } from "lucide-react";
 import { colors, alpha, gradients } from "../../styles/theme";
 
 export default function RiderDashboardPage() {
-  const dispatch = useAppDispatch();
-  const user = useAppSelector(selectUser);
 
   return (
     <div
       style={{
-        minHeight: "100vh",
-        background: gradients.page,
         color: colors.textPrimary,
         fontFamily: "system-ui, sans-serif",
       }}
     >
-      {/* Header */}
-      <header
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          padding: "16px 24px",
-          borderBottom: `1px solid ${colors.border}`,
-        }}
-      >
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <div
-            style={{
-              width: 40,
-              height: 40,
-              borderRadius: "50%",
-              background: gradients.avatar,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <User size={20} color="#fff" />
-          </div>
-          <div>
-            <p style={{ margin: 0, fontSize: 12, color: colors.textSecondary }}>Welcome back</p>
-            <p style={{ margin: 0, fontWeight: 600, fontSize: 15 }}>{user?.name || "Rider"}</p>
-          </div>
-        </div>
-
-        <button
-          onClick={() => dispatch(logout())}
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 6,
-            background: "none",
-            border: `1px solid ${colors.border}`,
-            color: colors.textSecondary,
-            padding: "8px 14px",
-            borderRadius: 8,
-            cursor: "pointer",
-            fontSize: 14,
-            transition: "all 0.15s",
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.color = colors.textPrimary;
-            e.currentTarget.style.borderColor = colors.textFaint;
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.color = colors.textSecondary;
-            e.currentTarget.style.borderColor = colors.border;
-          }}
-        >
-          <LogOut size={16} />
-          Sign out
-        </button>
-      </header>
-
       {/* Hero */}
       <section style={{ padding: "48px 24px 32px" }}>
         <p
