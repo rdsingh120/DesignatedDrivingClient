@@ -1,30 +1,31 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Bell } from "lucide-react";
+import { Bell, X } from "lucide-react";
+import toast from "react-hot-toast";
 import { useAppDispatch, useAppSelector } from "../../../app/hooks";
 import {
   fetchNotifications,
   markNotificationAsRead,
   markAllNotificationsAsRead,
+  addNotification,
 } from "../../../features/notifications/notificationsSlice";
 import {
   colors, alpha, gradients,
   iconBtn, dropdown, countBadge, pill, textBtn, emptyState, listRow,
 } from "../../../styles/theme";
 
-const POLL_INTERVAL_MS = 15000;
-
 const TYPE_META = {
-  TRIP_ACCEPTED:  { icon: "🚗", color: colors.warningLight },
+  TRIP_ACCEPTED: { icon: "🚗", color: colors.warningLight },
   DRIVER_ARRIVED: { icon: "📍", color: colors.primaryLight },
+  TRIP_STARTED: { icon: "🛣️", color: colors.primaryLight },
   TRIP_COMPLETED: { icon: "✅", color: colors.successLight },
   TRIP_CANCELLED: { icon: "❌", color: colors.dangerLight },
 };
 
 function timeAgo(dateStr) {
   const diff = Math.floor((Date.now() - new Date(dateStr)) / 1000);
-  if (diff < 60)    return "just now";
-  if (diff < 3600)  return `${Math.floor(diff / 60)}m ago`;
+  if (diff < 60) return "just now";
+  if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
   if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
   return `${Math.floor(diff / 86400)}d ago`;
 }
@@ -36,7 +37,7 @@ export default function NotificationCenter() {
   const panelRef = useRef(null);
 
   const notifications = useAppSelector((s) => s.notifications.notifications);
-  const unreadCount   = useAppSelector((s) => s.notifications.unreadCount);
+  const unreadCount = useAppSelector((s) => s.notifications.unreadCount);
 
   // Inject pulse keyframes once
   useEffect(() => {
@@ -55,12 +56,64 @@ export default function NotificationCenter() {
     }
   }, []);
 
-  // Initial fetch + periodic polling
+  // Initial fetch + SSE stream for instant push
   useEffect(() => {
     dispatch(fetchNotifications());
-    const id = setInterval(() => dispatch(fetchNotifications()), POLL_INTERVAL_MS);
-    return () => clearInterval(id);
+
+    const token = localStorage.getItem("token");
+    const base = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+    const es = new EventSource(`${base}/api/notifications/stream?token=${token}`);
+
+    es.onmessage = (e) => {
+      try {
+        const notification = JSON.parse(e.data);
+        dispatch(addNotification(notification));
+      } catch (e) { console.error("SSE parse error", e); }
+    };
+
+    return () => es.close();
   }, [dispatch]);
+
+  // Show a persistent toast whenever new unread notifications arrive
+  const prevUnreadRef = useRef(null);
+  useEffect(() => {
+    if (prevUnreadRef.current === null) {
+      prevUnreadRef.current = unreadCount;
+      return;
+    }
+    if (unreadCount > prevUnreadRef.current) {
+      const newest = notifications.find((n) => !n.read);
+      const meta = newest ? (TYPE_META[newest.type] || { icon: "🔔" }) : { icon: "🔔" };
+      toast.custom(
+        (t) => (
+          <div style={{
+            display: "flex", alignItems: "flex-start", gap: 12,
+            background: colors.bgBase, border: `1px solid ${colors.border}`,
+            borderRadius: 12, padding: "12px 14px", boxShadow: "0 8px 32px rgba(0,0,0,0.5)",
+            maxWidth: 320, width: "100%",
+          }}>
+            <span style={{ fontSize: 20, flexShrink: 0 }}>{meta.icon}</span>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <p style={{ margin: 0, fontWeight: 700, fontSize: 13, color: colors.textPrimary }}>
+                {newest?.title ?? "New notification"}
+              </p>
+              <p style={{ margin: "3px 0 0", fontSize: 12, color: colors.textSecondary, lineHeight: 1.4 }}>
+                {newest?.message ?? "You have a new update."}
+              </p>
+            </div>
+            <button
+              onClick={() => toast.remove(t.id)}
+              style={{ background: "none", border: "none", cursor: "pointer", color: colors.textFaint, padding: 0, flexShrink: 0 }}
+            >
+              <X size={15} />
+            </button>
+          </div>
+        ),
+        { duration: Infinity }
+      );
+    }
+    prevUnreadRef.current = unreadCount;
+  }, [unreadCount, notifications]);
 
   // Close panel on outside click
   useEffect(() => {
@@ -75,7 +128,11 @@ export default function NotificationCenter() {
   function handleNotificationClick(notification) {
     if (!notification.read) dispatch(markNotificationAsRead(notification._id));
     setOpen(false);
-    navigate(`/rider/trip/${notification.trip}`);
+    if (notification.type === "TRIP_COMPLETED") {
+      navigate(`/rider/rate/${notification.trip}`);
+    } else {
+      navigate(`/rider/trip/${notification.trip}`);
+    }
   }
 
   function handleMarkAllRead(e) {
@@ -98,7 +155,7 @@ export default function NotificationCenter() {
 
       {/* Bell button — iconBtn base + notification-specific overrides */}
       <button
-        onClick={() => setOpen((v) => !v)}
+        onClick={() => { setOpen((v) => !v); toast.remove(); }}
         aria-label="Notifications"
         style={{
           ...iconBtn,
@@ -176,7 +233,7 @@ export default function NotificationCenter() {
                       }}>
                         {n.title}
                       </span>
-                      <span style={{ fontSize: 11, color: colors.textFaint, flexShrink: 0 }}>
+                      <span style={{ fontSize: 11, color: colors.textSecondary, flexShrink: 0 }}>
                         {timeAgo(n.createdAt)}
                       </span>
                     </div>

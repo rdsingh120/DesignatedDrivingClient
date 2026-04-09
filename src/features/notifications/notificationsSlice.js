@@ -49,7 +49,12 @@ const notificationsSlice = createSlice({
     loading: false,
     error: null,
   },
-  reducers: {},
+  reducers: {
+    addNotification(state, action) {
+      state.notifications.unshift(action.payload);
+      if (!action.payload.read) state.unreadCount += 1;
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchNotifications.pending, (s) => { s.loading = true; s.error = null; })
@@ -78,4 +83,5 @@ const notificationsSlice = createSlice({
   },
 });
 
+export const { addNotification } = notificationsSlice.actions;
 export default notificationsSlice.reducer;
