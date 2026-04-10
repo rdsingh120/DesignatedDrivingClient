@@ -194,6 +194,42 @@ export default function RiderTripPage() {
               )
             )}
 
+            {/* Report an issue (COMPLETED trips only) */}
+            {trip.status === "COMPLETED" && (
+              <div style={{
+                ...cardStyle,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                padding: "16px 20px",
+                marginBottom: 16,
+              }}>
+                <div>
+                  <p style={{ margin: 0, fontSize: 14, fontWeight: 600, color: colors.textPrimary }}>
+                    Have an issue with this trip?
+                  </p>
+                  <p style={{ margin: "2px 0 0", fontSize: 13, color: colors.textMuted }}>
+                    Let us know and our team will review it.
+                  </p>
+                </div>
+                <Link to={`/rider/trip/${trip._id}/report`} style={{ textDecoration: "none", flexShrink: 0 }}>
+                  <button style={{
+                    background: "transparent",
+                    border: `1px solid ${colors.border}`,
+                    color: colors.textSecondary,
+                    borderRadius: 8,
+                    padding: "9px 18px",
+                    cursor: "pointer",
+                    fontWeight: 600,
+                    fontSize: 13,
+                    whiteSpace: "nowrap",
+                  }}>
+                    Report an Issue
+                  </button>
+                </Link>
+              </div>
+            )}
+
             {/* Cancelled actions */}
             {trip.status === "CANCELLED" && (
               <div style={{ ...cardStyle, textAlign: "center", padding: "24px 20px" }}>

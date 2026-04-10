@@ -24,6 +24,9 @@ export const apiStartTrip = (id) => http.post(API.TRIPS.START(id));
 export const apiCompleteTrip = (id) => http.post(API.TRIPS.COMPLETE(id));
 export const apiCancelTrip = (id) => http.post(API.TRIPS.CANCEL(id));
 
+// Incidents
+export const apiReportIssue = (tripId, payload) => http.post(API.TRIPS.REPORT(tripId), payload);
+
 // Notifications
 export const apiGetMyNotifications = () => http.get(API.NOTIFICATIONS.MINE);
 export const apiMarkAllNotificationsAsRead = () => http.patch(API.NOTIFICATIONS.READ_ALL);
