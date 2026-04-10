@@ -410,9 +410,14 @@ export default function RiderDashboardPage() {
                 }}
                 onClick={async () => {
                   try {
+                    if (!address || !address.trim()) {
+                      alert("Address is required");
+                      return;
+                    }
+
                     const payload = {
                       label: activeLabel,
-                      address,
+                      address: address.trim(),
                     };
 
                     const existing = savedLocations.find(
@@ -450,7 +455,15 @@ export default function RiderDashboardPage() {
                       (loc) => loc.label?.toLowerCase() === activeLabel.toLowerCase(),
                     );
 
-                    const payload = { label: activeLabel, address };
+                    if (!address || !address.trim()) {
+                      alert("Address is required");
+                      return;
+                    }
+
+                    const payload = {
+                      label: activeLabel,
+                      address: address.trim(),
+                    };
 
                     if (existing?._id) {
                       await apiUpdateSavedLocation(existing._id, payload);
