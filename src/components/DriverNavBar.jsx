@@ -78,9 +78,10 @@ export default function DriverNavBar() {
               boxShadow: "0 12px 40px rgba(0,0,0,0.5)", overflow: "hidden", zIndex: 100,
             }}>
               {[
-                { icon: "🏠", label: "Dashboard",   path: "/driver" },
-                { icon: "⭐", label: "My Ratings", path: "/driver/ratings" },
-                { icon: "👤", label: "My Profile",  path: "/driver/profile" },
+                { icon: "🏠", label: "Dashboard",    path: "/driver" },
+                { icon: "🗂️", label: "Trip History", path: "/driver/history" },
+                { icon: "⭐", label: "My Ratings",   path: "/driver/ratings" },
+                { icon: "👤", label: "My Profile",   path: "/driver/profile" },
               ].map(({ icon, label, path }) => (
                 <button
                   key={label}

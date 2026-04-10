@@ -7,11 +7,13 @@ import DriverDashboardPage from "./pages/Driver/DriverDashboardPage";
 import DriverProfilePage from "./pages/Driver/DriverProfilePage";
 import DriverTripDetailPage from "./pages/Driver/DriverTripDetailPage";
 import DriverRatingsPage from "./pages/Driver/DriverRatingsPage";
+import DriverTripHistoryPage from "./pages/Driver/DriverTripHistoryPage";
 
 import AdminDashboardPage from "./pages/Admin/AdminDashboardPage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import RateTripPage from "./pages/Rider/RateTripPage";
+import ReportIssuePage from "./pages/Rider/ReportIssuePage";
 import { useAppSelector } from "./app/hooks";
 import { selectRole } from "./features/auth/authSlice";
 
@@ -68,6 +70,8 @@ export default function App() {
               <Route path="/rider/profile" element={<RiderProfilePage />} />
               {/* Rating page */}
               <Route path="/rider/rate/:tripId" element={<RateTripPage />} />
+              {/* Report issue page */}
+              <Route path="/rider/trip/:tripId/report" element={<ReportIssuePage />} />
             </Route>
           </Route>
 
@@ -77,6 +81,7 @@ export default function App() {
             <Route path="/driver/profile" element={<DriverProfilePage />} />
             <Route path="/driver/trip/:id" element={<DriverTripDetailPage />} />
             <Route path="/driver/ratings" element={<DriverRatingsPage />} />
+            <Route path="/driver/history" element={<DriverTripHistoryPage />} />
           </Route>
         </Route>
 

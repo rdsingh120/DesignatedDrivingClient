@@ -24,6 +24,7 @@ export const API = {
     START: (id) => `/api/trips/${id}/start`,
     COMPLETE: (id) => `/api/trips/${id}/complete`,
     CANCEL: (id) => `/api/trips/${id}/cancel`,
+    REPORT: (id) => `/api/trips/${id}/report`,
   },
 
   DRIVER_PROFILES: {
