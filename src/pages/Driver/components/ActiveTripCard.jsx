@@ -71,6 +71,12 @@ export default function ActiveTripCard() {
   const watchIdRef = useRef(null);
   const lastSentAtRef = useRef(0);
 
+  // Vehicle photo state
+  const [beforePhoto, setBeforePhoto] = useState(null);
+  const [afterPhoto, setAfterPhoto] = useState(null);
+  const [beforePreview, setBeforePreview] = useState(null);
+  const [afterPreview, setAfterPreview] = useState(null);
+
   const tripId = trip?._id;
   const status = trip?.status;
   const canCancel = status === "ASSIGNED" || status === "ENROUTE";
@@ -96,6 +102,20 @@ export default function ActiveTripCard() {
         : null)
     );
   }, [trip]);
+
+  function handleBeforePhotoChange(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setBeforePhoto(file);
+    setBeforePreview(URL.createObjectURL(file));
+  }
+
+   function handleAfterPhotoChange(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setAfterPhoto(file);
+    setAfterPreview(URL.createObjectURL(file));
+  }
 
   // Wait timer — ticks every second when driver is waiting at pickup
   const waitStart = trip?.arrivedAt || trip?.updatedAt;
@@ -400,6 +420,66 @@ export default function ActiveTripCard() {
         </div>
       </div>
 
+      {/* Vehicle Photos */}
+      <div
+        style={{
+          background: colors.bgDeep,
+          borderRadius: 10,
+          padding: 16,
+          marginBottom: 16,
+        }}
+      >
+        <p style={sectionLabel}>Vehicle Photos</p>
+
+        {(status === "ASSIGNED" || status === "ENROUTE" || status === "DRIVING") && (
+          <div style={{ marginBottom: 16 }}>
+            <p style={{ fontSize: 13, color: colors.textSecondary, marginBottom: 6 }}>
+              Before Trip Photo
+            </p>
+
+            <input type="file" accept="image/*" onChange={handleBeforePhotoChange} />
+
+            {beforePreview && (
+              <img
+                src={beforePreview}
+                alt="Before Trip"
+                style={{
+                  width: "100%",
+                  maxWidth: 250,
+                  marginTop: 10,
+                  borderRadius: 8,
+                  display: "block",
+                }}
+              />
+            )}
+          </div>
+        )}
+
+        {status === "COMPLETED" && (
+          <div>
+            <p style={{ fontSize: 13, color: colors.textSecondary, marginBottom: 6 }}>
+              After Trip Photo
+            </p>
+
+            <input type="file" accept="image/*" onChange={handleAfterPhotoChange} />
+
+            {afterPreview && (
+              <img
+                src={afterPreview}
+                alt="After Trip"
+                style={{
+                  width: "100%",
+                  maxWidth: 250,
+                  marginTop: 10,
+                  borderRadius: 8,
+                  display: "block",
+                }}
+              />
+            )}
+          </div>
+        )}
+      </div>
+      
       {/* Action buttons — color-coded by status */}
       <div style={{ display: "flex", gap: 10 }}>
         {status === "ASSIGNED" && (
