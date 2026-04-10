@@ -184,7 +184,7 @@ export default function TripMarketplace() {
                         {t.fare_amount} {t.currency}
                       </span>
                       <span style={{ fontSize: 12, color: colors.textMuted }}>
-                        {t.distance_km} km
+                        {t.distance_km?.toFixed(2)} km
                       </span>
                     </div>
 
