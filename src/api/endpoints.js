@@ -35,4 +35,15 @@ export const API = {
     ME: "/api/users/me",
     UPDATE: "/api/users/me",
   },
+
+  NOTIFICATIONS: {
+    MINE: "/api/notifications",
+    READ_ALL: "/api/notifications/read-all",
+    READ_ONE: (id) => `/api/notifications/${id}/read`,
+  },
+  SAVED_LOCATIONS: {
+    MINE: "/api/saved-locations/me",
+    CREATE: "/api/saved-locations/me",
+    UPDATE: (id) => `/api/saved-locations/${id}`,
+  },
 };

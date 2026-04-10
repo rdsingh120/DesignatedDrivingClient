@@ -72,6 +72,7 @@ function FitBounds({ bounds }) {
 export default function RoutePreviewMap({
   pickup,
   dropoff,
+  driverLocation,
   route_polyline,
   height = 420,
   defaultCenter = [43.6532, -79.3832],
@@ -79,6 +80,7 @@ export default function RoutePreviewMap({
 }) {
   const pickupLL = useMemo(() => toLeafletLatLng(pickup), [pickup]);
   const dropoffLL = useMemo(() => toLeafletLatLng(dropoff), [dropoff]);
+  const driverLL = useMemo(() => toLeafletLatLng(driverLocation), [driverLocation]);
 
   const routePoints = useMemo(() => {
     if (!route_polyline) return [];
@@ -93,15 +95,17 @@ export default function RoutePreviewMap({
     const pts = [];
     if (pickupLL) pts.push(pickupLL);
     if (dropoffLL) pts.push(dropoffLL);
+    if (driverLL) pts.push(driverLL);
     if (routePoints.length) pts.push(...routePoints);
     return computeBounds(pts);
-  }, [pickupLL, dropoffLL, routePoints]);
+  }, [pickupLL, dropoffLL, driverLL, routePoints]);
 
   const center = useMemo(() => {
     if (pickupLL) return pickupLL;
     if (dropoffLL) return dropoffLL;
+    if (driverLL) return driverLL;
     return defaultCenter;
-  }, [pickupLL, dropoffLL, defaultCenter]);
+  }, [pickupLL, dropoffLL, driverLL, defaultCenter]);
 
   return (
     <div style={{ width: "100%", height, borderRadius: 12, overflow: "hidden" }}>
@@ -117,6 +121,7 @@ export default function RoutePreviewMap({
         />
         {bounds && <FitBounds bounds={bounds} />}
         {pickupLL && <Marker position={pickupLL} />}
+        {driverLL && <Marker position={driverLL} />}
         {dropoffLL && <Marker position={dropoffLL} />}
         {routePoints.length > 0 && <Polyline positions={routePoints} />}
       </MapContainer>

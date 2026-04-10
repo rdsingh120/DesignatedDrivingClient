@@ -1,82 +1,57 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { useAppDispatch, useAppSelector } from "../../app/hooks";
-import { logout, selectUser } from "../../features/auth/authSlice";
-import { Car, Clock, LogOut, MapPin, User } from "lucide-react";
+import { Car, Clock, MapPin, User } from "lucide-react";
 import { colors, alpha, gradients } from "../../styles/theme";
+import {
+  apiGetMySavedLocations,
+  apiCreateSavedLocation,
+  apiUpdateSavedLocation,
+} from "../../api/savedLocations";
 
 export default function RiderDashboardPage() {
-  const dispatch = useAppDispatch();
-  const user = useAppSelector(selectUser);
+  //modal state
+  const [modalOpen, setModalOpen] = React.useState(false);
+  const [activeLabel, setActiveLabel] = React.useState("");
+  const [address, setAddress] = React.useState("");
+  const [savedLocations, setSavedLocations] = React.useState([]);
+  const [loadingLocations, setLoadingLocations] = React.useState(false);
+
+  function handleQuickLocation(label) {
+    const list = savedLocations || [];
+
+    setActiveLabel(label);
+
+    const existing = list.find((loc) => loc.label?.toLowerCase() === label.toLowerCase());
+
+    setAddress(existing?.address || "");
+
+    setModalOpen(true);
+  }
+
+  React.useEffect(() => {
+    loadSavedLocations();
+  }, []);
+
+  async function loadSavedLocations() {
+    try {
+      setLoadingLocations(true);
+      const res = await apiGetMySavedLocations();
+      console.log("Saved locations API response:", res);
+      setSavedLocations(res?.data?.data || res?.data || res || []);
+    } catch (err) {
+      console.error("Failed to load locations", err);
+    } finally {
+      setLoadingLocations(false);
+    }
+  }
 
   return (
     <div
       style={{
-        minHeight: "100vh",
-        background: gradients.page,
         color: colors.textPrimary,
         fontFamily: "system-ui, sans-serif",
       }}
     >
-      {/* Header */}
-      <header
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          padding: "16px 24px",
-          borderBottom: `1px solid ${colors.border}`,
-        }}
-      >
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <div
-            style={{
-              width: 40,
-              height: 40,
-              borderRadius: "50%",
-              background: gradients.avatar,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <User size={20} color="#fff" />
-          </div>
-          <div>
-            <p style={{ margin: 0, fontSize: 12, color: colors.textSecondary }}>Welcome back</p>
-            <p style={{ margin: 0, fontWeight: 600, fontSize: 15 }}>{user?.name || "Rider"}</p>
-          </div>
-        </div>
-
-        <button
-          onClick={() => dispatch(logout())}
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 6,
-            background: "none",
-            border: `1px solid ${colors.border}`,
-            color: colors.textSecondary,
-            padding: "8px 14px",
-            borderRadius: 8,
-            cursor: "pointer",
-            fontSize: 14,
-            transition: "all 0.15s",
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.color = colors.textPrimary;
-            e.currentTarget.style.borderColor = colors.textFaint;
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.color = colors.textSecondary;
-            e.currentTarget.style.borderColor = colors.border;
-          }}
-        >
-          <LogOut size={16} />
-          Sign out
-        </button>
-      </header>
-
       {/* Hero */}
       <section style={{ padding: "48px 24px 32px" }}>
         <p
@@ -98,6 +73,35 @@ export default function RiderDashboardPage() {
           Book a safe, reliable designated driver in minutes.
         </p>
       </section>
+
+      {/* Quick Locations */}
+      <div style={{ padding: "0 24px 16px", display: "flex", gap: 10, flexWrap: "wrap" }}>
+        {[
+          { label: "Home", icon: "🏠" },
+          { label: "Work", icon: "💼" },
+          { label: "Gym", icon: "🏋️" },
+        ].map((item) => (
+          <button
+            key={item.label}
+            style={{
+              padding: "10px 14px",
+              borderRadius: 999,
+              border: `1px solid ${colors.border}`,
+              background: colors.bgBase,
+              color: colors.textPrimary,
+              cursor: "pointer",
+              fontSize: 13,
+              display: "flex",
+              alignItems: "center",
+              gap: 6,
+            }}
+            onClick={() => handleQuickLocation(item.label)}
+          >
+            <span>{item.icon}</span>
+            {item.label}
+          </button>
+        ))}
+      </div>
 
       {/* Quick action cards */}
       <section
@@ -303,13 +307,7 @@ export default function RiderDashboardPage() {
               Profile
             </h2>
 
-            <p
-              style={{
-                margin: 0,
-                fontSize: 13,
-                color: colors.textMuted,
-              }}
-            >
+            <p style={{ margin: 0, fontSize: 13, color: colors.textMuted }}>
               Update your account information
             </p>
           </div>
@@ -348,11 +346,143 @@ export default function RiderDashboardPage() {
             How it works
           </p>
           <p style={{ margin: "4px 0 0", fontSize: 13, color: colors.textMuted }}>
-            Add a vehicle &rarr; Get a fare estimate &rarr; A designated driver is assigned to you
-            &rarr; Arrive safely.
+            Add a vehicle → Get a fare estimate → A designated driver is assigned to you → Arrive
+            safely.
           </p>
         </div>
       </section>
+
+      {/* MODAL */}
+      {modalOpen && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: "rgba(0,0,0,0.6)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 9999,
+          }}
+          onClick={() => setModalOpen(false)}
+        >
+          <div
+            style={{
+              width: "90%",
+              maxWidth: 420,
+              background: colors.bgBase,
+              borderRadius: 16,
+              padding: 20,
+              border: `1px solid ${colors.border}`,
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 style={{ margin: "0 0 12px", fontSize: 18 }}>Set {activeLabel} Address</h3>
+
+            <input
+              style={{
+                width: "100%",
+                boxSizing: "border-box",
+                padding: 12,
+                borderRadius: 10,
+                border: `1px solid ${colors.border}`,
+                background: colors.bgBase,
+                color: colors.textPrimary,
+                marginBottom: 16,
+              }}
+              placeholder={`Enter ${activeLabel} address`}
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
+            />
+
+            <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
+              <button
+                style={{
+                  padding: "10px 14px",
+                  borderRadius: 10,
+                  border: `1px solid ${colors.border}`,
+                  background: colors.bgBase,
+                  color: colors.textPrimary,
+                  cursor: "pointer",
+                }}
+                onClick={async () => {
+                  try {
+                    if (!address || !address.trim()) {
+                      alert("Address is required");
+                      return;
+                    }
+
+                    const payload = {
+                      label: activeLabel,
+                      address: address.trim(),
+                    };
+
+                    const existing = savedLocations.find(
+                      (loc) => loc.label?.toLowerCase() === activeLabel.toLowerCase(),
+                    );
+
+                    if (existing?._id) {
+                      await apiUpdateSavedLocation(existing._id, payload);
+                    } else {
+                      await apiCreateSavedLocation(payload);
+                    }
+
+                    await loadSavedLocations();
+                    setModalOpen(false);
+                  } catch (err) {
+                    console.error("Failed to update location", err);
+                  }
+                }}
+              >
+                Update
+              </button>
+
+              <button
+                style={{
+                  padding: "10px 14px",
+                  borderRadius: 10,
+                  border: "none",
+                  background: colors.primary,
+                  color: "#fff",
+                  cursor: "pointer",
+                }}
+                onClick={async () => {
+                  try {
+                    const existing = savedLocations.find(
+                      (loc) => loc.label?.toLowerCase() === activeLabel.toLowerCase(),
+                    );
+
+                    if (!address || !address.trim()) {
+                      alert("Address is required");
+                      return;
+                    }
+
+                    const payload = {
+                      label: activeLabel,
+                      address: address.trim(),
+                    };
+
+                    if (existing?._id) {
+                      await apiUpdateSavedLocation(existing._id, payload);
+                    } else {
+                      await apiCreateSavedLocation(payload);
+                    }
+
+                    window.location.href = `/rider/request?quick=${activeLabel}&address=${encodeURIComponent(address)}`;
+                  } catch (err) {
+                    console.error(err);
+                  }
+                }}
+              >
+                GO
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

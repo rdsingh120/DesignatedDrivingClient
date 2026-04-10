@@ -2,16 +2,19 @@ import React, { useEffect, useState } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import RoleRoute from "./routes/RoleRoute";
+
 import DriverDashboardPage from "./pages/Driver/DriverDashboardPage";
 import DriverProfilePage from "./pages/Driver/DriverProfilePage";
 import DriverTripDetailPage from "./pages/Driver/DriverTripDetailPage";
+import DriverRatingsPage from "./pages/Driver/DriverRatingsPage";
 
 import AdminDashboardPage from "./pages/Admin/AdminDashboardPage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
-
+import RateTripPage from "./pages/Rider/RateTripPage";
 import { useAppSelector } from "./app/hooks";
 import { selectRole } from "./features/auth/authSlice";
+
 
 import RiderDashboardPage from "./pages/Rider/RiderDashboardPage";
 import RiderVehiclesPage from "./pages/Rider/RiderVehiclesPage";
@@ -19,8 +22,11 @@ import RiderRequestPage from "./pages/Rider/RiderRequestPage";
 import RiderTripPage from "./pages/Rider/RiderTripPage";
 import RiderTripHistoryPage from "./pages/Rider/RiderTripHistoryPage";
 import RiderProfilePage from "./pages/Rider/RiderProfilePage";
+import RiderLayout from "./layouts/RiderLayout";
 import { waitForAPI } from "./utils/apiWakeCheck";
 import APILoadingScreen from "./components/APILoadingScreen";
+
+
 
 function RoleRedirect() {
   const role = useAppSelector(selectRole);
@@ -53,18 +59,15 @@ export default function App() {
 
           {/* Rider (protected + role-gated) */}
           <Route element={<RoleRoute allow={["RIDER"]} />}>
-            <Route path="/rider" element={<RiderDashboardPage />} />
-            <Route path="/rider/vehicles" element={<RiderVehiclesPage />} />
-            <Route path="/rider/request" element={<RiderRequestPage />} />
-            <Route path="/rider/trip/:id" element={<RiderTripPage />} />
-            <Route path="/rider/history" element={<RiderTripHistoryPage />} />
-            <Route element={<RoleRoute allow={["RIDER"]} />}>
+            <Route element={<RiderLayout />}>
               <Route path="/rider" element={<RiderDashboardPage />} />
               <Route path="/rider/vehicles" element={<RiderVehiclesPage />} />
               <Route path="/rider/request" element={<RiderRequestPage />} />
               <Route path="/rider/trip/:id" element={<RiderTripPage />} />
               <Route path="/rider/history" element={<RiderTripHistoryPage />} />
               <Route path="/rider/profile" element={<RiderProfilePage />} />
+              {/* Rating page */}
+              <Route path="/rider/rate/:tripId" element={<RateTripPage />} />
             </Route>
           </Route>
 
@@ -73,12 +76,13 @@ export default function App() {
             <Route path="/driver" element={<DriverDashboardPage />} />
             <Route path="/driver/profile" element={<DriverProfilePage />} />
             <Route path="/driver/trip/:id" element={<DriverTripDetailPage />} />
+            <Route path="/driver/ratings" element={<DriverRatingsPage />} />
           </Route>
         </Route>
 
         <Route element={<RoleRoute allow={["ADMIN"]} />}>
-  <Route path="/admin" element={<AdminDashboardPage />} />
-</Route>
+          <Route path="/admin" element={<AdminDashboardPage />} />
+        </Route>
       </Routes>
     </BrowserRouter>
   );

@@ -14,6 +14,8 @@ export default function RiderRequestPage() {
   const navigate = useNavigate();
   const [params] = useSearchParams();
 
+  const quickAddress = params.get("address");
+
   // vehicleId from URL param (original flow) or local selection (dashboard flow)
   const urlVehicleId = params.get("vehicleId");
   const [selectedVehicleId, setSelectedVehicleId] = useState(urlVehicleId || "");
@@ -33,7 +35,7 @@ export default function RiderRequestPage() {
     "100 King St W, Toronto, ON"
   );
   const [dropoff_address, setDropoffAddress] = useState(
-    "1 Yonge St, Toronto, ON"
+    quickAddress || "1 Yonge St, Toronto, ON"
   );
   const [actionError, setActionError] = useState(null);
   const [hasEstimated, setHasEstimated] = useState(false);
