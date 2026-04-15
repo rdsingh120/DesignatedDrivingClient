@@ -48,7 +48,16 @@ export default function TripMarketplace() {
       const stillThere = processedTrips.find((t) => t._id === selectedTrip._id);
       setSelectedTrip(stillThere || processedTrips[0] || null);
     }
-  }, [processedTrips]);
+  }, [processedTrips, selectedTrip]);
+
+  const hasActiveFilters = sortBy !== "fare" || maxDistance !== "";
+
+  const sortLabel =
+    sortBy === "fare"
+      ? "Fare: High → Low"
+      : sortBy === "distance"
+        ? "Distance: Low → High"
+        : "Profit/km";
 
   return (
     <div style={cardStyle}>
@@ -71,16 +80,17 @@ export default function TripMarketplace() {
         )}
       </p>
 
-      {/* FILTER + SORT (always visible) */}
+      {/* FILTER + SORT */}
       <div
         style={{
           display: "flex",
           gap: 10,
-          marginBottom: 14,
+          marginBottom: 10,
           background: colors.bgBase,
           padding: 8,
           borderRadius: 12,
           border: `1px solid ${colors.borderSubtle}`,
+          flexWrap: "wrap",
         }}
       >
         <select
@@ -88,6 +98,7 @@ export default function TripMarketplace() {
           onChange={(e) => setSortBy(e.target.value)}
           style={{
             flex: 1,
+            minWidth: 180,
             padding: "10px 12px",
             borderRadius: 10,
             background: colors.bgDeep,
@@ -103,6 +114,7 @@ export default function TripMarketplace() {
         >
           <option value="fare">💰 Fare (High → Low)</option>
           <option value="distance">📍 Distance (Low → High)</option>
+          <option value="profit">📈 Profit / km</option>
         </select>
 
         <select
@@ -110,6 +122,7 @@ export default function TripMarketplace() {
           onChange={(e) => setMaxDistance(e.target.value)}
           style={{
             flex: 1,
+            minWidth: 180,
             padding: "10px 12px",
             borderRadius: 10,
             background: colors.bgDeep,
@@ -128,37 +141,128 @@ export default function TripMarketplace() {
           <option value="10">≤ 10 km</option>
           <option value="20">≤ 20 km</option>
         </select>
+
+        <button
+          onClick={() => {
+            setSortBy("fare");
+            setMaxDistance("");
+          }}
+          disabled={!hasActiveFilters}
+          style={{
+            padding: "10px 14px",
+            borderRadius: 10,
+            background: hasActiveFilters ? colors.bgDeep : colors.bgBase,
+            border: `1px solid ${colors.borderSubtle}`,
+            color: hasActiveFilters ? colors.textPrimary : colors.textMuted,
+            cursor: hasActiveFilters ? "pointer" : "not-allowed",
+            fontWeight: 600,
+            fontSize: 13,
+            opacity: hasActiveFilters ? 1 : 0.7,
+          }}
+        >
+          Reset
+        </button>
+      </div>
+
+      {/* ACTIVE FILTER CHIPS */}
+      <div
+        style={{
+          display: "flex",
+          gap: 8,
+          flexWrap: "wrap",
+          marginBottom: 14,
+          minHeight: 28,
+        }}
+      >
+        <div
+          style={{
+            background: alpha.primary12,
+            color: colors.primaryLight,
+            fontSize: 12,
+            fontWeight: 600,
+            padding: "6px 10px",
+            borderRadius: 999,
+            border: `1px solid ${alpha.primary40}`,
+          }}
+        >
+          Sort: {sortLabel}
+        </div>
+
+        {maxDistance !== "" && (
+          <div
+            style={{
+              background: colors.bgDeep,
+              color: colors.textSecondary,
+              fontSize: 12,
+              fontWeight: 600,
+              padding: "6px 10px",
+              borderRadius: 999,
+              border: `1px solid ${colors.borderSubtle}`,
+              display: "flex",
+              alignItems: "center",
+              gap: 6,
+            }}
+          >
+            Distance: ≤ {maxDistance} km
+            <button
+              onClick={() => setMaxDistance("")}
+              style={{
+                background: "transparent",
+                border: "none",
+                color: colors.textMuted,
+                cursor: "pointer",
+                fontSize: 12,
+                padding: 0,
+                lineHeight: 1,
+              }}
+            >
+              ✕
+            </button>
+          </div>
+        )}
       </div>
 
       {processedTrips.length === 0 ? (
-        <div style={{ textAlign: "center", padding: "32px 20px" }}>
+        <div
+          style={{
+            textAlign: "center",
+            padding: "36px 20px",
+            background: colors.bgDeep,
+            border: `1px dashed ${colors.borderSubtle}`,
+            borderRadius: 12,
+          }}
+        >
           <div style={{ fontSize: 36, marginBottom: 10 }}>🔍</div>
-          <p style={{ margin: 0, fontSize: 15, color: colors.textSecondary }}>
-            No trips match your filters.
+          <p style={{ margin: 0, fontSize: 15, color: colors.textSecondary, fontWeight: 600 }}>
+            No trips match your current filters.
           </p>
           <p style={{ margin: "6px 0 0", fontSize: 13, color: colors.textMuted }}>
-            Try adjusting filters or check back later.
+            {maxDistance
+              ? `No trips found within ${maxDistance} km. Try increasing the distance or reset filters.`
+              : "Try adjusting your filters or check back later."}
           </p>
 
-          <button
-            onClick={() => {
-              setSortBy("fare");
-              setMaxDistance("");
-            }}
-            style={{
-              marginTop: 14,
-              padding: "10px 16px",
-              background: colors.bgBase,
-              color: colors.textPrimary,
-              border: `1px solid ${colors.borderSubtle}`,
-              borderRadius: 8,
-              cursor: "pointer",
-              fontWeight: 600,
-              fontSize: 13,
-            }}
-          >
-            Clear Filters
-          </button>
+          {hasActiveFilters && (
+            <button
+              onClick={() => {
+                setSortBy("fare");
+                setMaxDistance("");
+              }}
+              style={{
+                marginTop: 14,
+                padding: "10px 16px",
+                background: alpha.primary15,
+                color: colors.primaryLight,
+                border: `1px solid ${alpha.primary40}`,
+                borderRadius: 8,
+                cursor: "pointer",
+                fontWeight: 600,
+                fontSize: 13,
+              }}
+            >
+              Clear Filters
+            </button>
+          )}
         </div>
       ) : (
         <div
@@ -181,6 +285,8 @@ export default function TripMarketplace() {
           >
             {processedTrips.map((t) => {
               const isSelected = selectedTrip?._id === t._id;
+              const profitPerKm = (t.fare_amount / (t.distance_km || 1)).toFixed(2);
+
               return (
                 <div
                   key={t._id}
@@ -194,6 +300,7 @@ export default function TripMarketplace() {
                     borderRadius: 12,
                     padding: "14px 16px",
                     boxShadow: isSelected ? "0 0 0 2px rgba(0,123,255,0.2)" : "none",
+                    transition: "all 0.15s ease",
                   }}
                 >
                   <div
@@ -205,6 +312,24 @@ export default function TripMarketplace() {
                     <span style={{ fontSize: 12, color: colors.textMuted }}>
                       {t.distance_km?.toFixed(2)} km
                     </span>
+                  </div>
+
+                  <div
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: 6,
+                      marginBottom: 10,
+                      fontSize: 11,
+                      fontWeight: 700,
+                      color: colors.primaryLight,
+                      background: alpha.primary12,
+                      border: `1px solid ${alpha.primary40}`,
+                      borderRadius: 999,
+                      padding: "4px 8px",
+                    }}
+                  >
+                    📈 {profitPerKm} {t.currency}/km
                   </div>
 
                   <div style={{ fontSize: 13, color: colors.textSecondary }}>
@@ -243,7 +368,7 @@ export default function TripMarketplace() {
             })}
           </div>
 
-          {/* Map + details (unchanged) */}
+          {/* Map + details */}
           <div>
             {!selectedTrip ? (
               <div
